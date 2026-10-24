@@ -53,7 +53,21 @@ p{margin:0}
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .whobtn{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.1rem;min-width:0;padding:4px 10px 4px 4px;border-radius:999px}
 .whobtn span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.avatar{width:40px;height:40px;border-radius:50%;background:var(--tc);color:#2E3440;display:inline-flex;align-items:center;justify-content:center;font-weight:700;flex:none;font-size:1.1rem}
+.avatar{width:44px;height:44px;border-radius:50%;background:var(--tc);color:#2E3440;display:inline-flex;align-items:center;justify-content:center;font-weight:700;flex:none;font-size:1.1rem;overflow:hidden}
+.avatar svg{width:100%;height:100%;display:block}
+.animals{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.animals button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border-radius:14px;border:3px solid transparent;background:var(--paper);font-size:.7rem;font-weight:500}
+.animals button svg{width:100%;max-width:58px;height:auto}
+.animals button[aria-pressed="true"]{border-color:var(--accent);background:var(--card)}
+.buddy{display:flex;align-items:center;gap:12px;text-align:left}
+.buddy .avatar{width:64px;height:64px}
+.buddy.big .avatar{width:84px;height:84px}
+.buddy .say{font-weight:700;font-size:1.2rem;line-height:1.35}
+.greet{flex-direction:row;align-items:center}
+@media (prefers-reduced-motion:no-preference){
+  .bounce .avatar{animation:bounce .7s ease-out}
+  @keyframes bounce{0%{transform:translateY(0)}30%{transform:translateY(-12px) rotate(-6deg)}60%{transform:translateY(0) rotate(4deg)}80%{transform:translateY(-4px)}100%{transform:none}}
+}
 .starbox{display:flex;align-items:center;gap:6px;font-weight:700;font-variant-numeric:tabular-nums;font-size:1.1rem;padding:6px 10px;border-radius:999px;flex:none}
 .starbox svg{width:28px;height:28px;fill:var(--star)}
 .panel{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px}
@@ -244,6 +258,8 @@ ul.plain{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;f
       <h2 id="addTitle">Add a child</h2>
       <label for="kidName">Name</label>
       <input type="text" id="kidName" maxlength="20" autocomplete="off" placeholder="Type a name">
+      <span style="font-weight:500">Pick your animal</span>
+      <div class="animals" id="kidAnimals"></div>
       <span style="font-weight:500">Pick a colour</span>
       <div class="colpick" id="kidCols"></div>
       <button class="big" id="addKidBtn">Add and start</button>
@@ -252,6 +268,7 @@ ul.plain{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;f
 
   <!-- HOME -->
   <section id="home" hidden>
+    <div class="panel greet"><div class="buddy big bounce" id="greetBuddy"></div></div>
     <div class="panel">
       <h2>Which times tables?</h2>
       <p class="muted">Tap to choose. Each table has its own colour.</p>
@@ -279,6 +296,7 @@ ul.plain{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;f
   <section id="settings" hidden>
     <div class="panel">
       <h2>Settings</h2>
+      <div class="setting"><span>My animal</span><div class="animals" id="setAnimals"></div></div>
       <div class="setting"><span>Page colour</span><div class="row" data-set="tint">
         <button class="pill" data-v="cream">Cream</button><button class="pill" data-v="blue">Blue</button><button class="pill" data-v="green">Green</button><button class="pill" data-v="peach">Peach</button></div></div>
       <div class="setting"><span>Letters</span><div class="row" data-set="font">
@@ -317,6 +335,7 @@ ul.plain{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;f
   <!-- DONE -->
   <section id="done" hidden>
     <div class="panel celebrate pop">
+      <div class="buddy big bounce" id="doneBuddy"></div>
       <h2 id="doneTitle">Round finished!</h2>
       <div class="num" id="doneScore">8 stars</div>
       <div class="earned" id="doneStars"></div>
@@ -462,9 +481,9 @@ ul.plain{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;f
 'use strict';
 /* ================= storage: one record per child ================= */
 const KEY='tts-v2',OLD='tts-v1';
-const KID_DEFAULTS={name:'',col:'#8DC3F2',tables:[2,5,10],tint:'cream',font:'lexend',voice:'on',sound:'on',length:'10',timer:'0',stars:0,facts:{},
+const KID_DEFAULTS={name:'',col:'#8DC3F2',animal:'fox',tables:[2,5,10],tint:'cream',font:'lexend',voice:'on',sound:'on',length:'10',timer:'0',stars:0,facts:{},
   builds:{treehouse:[],castle:[],rocket:[]},project:'treehouse',fow:null,log:[]};
-const freshKid=(name,col)=>Object.assign(JSON.parse(JSON.stringify(KID_DEFAULTS)),{name,col});
+const freshKid=(name,col,animal)=>Object.assign(JSON.parse(JSON.stringify(KID_DEFAULTS)),{name,col,animal:animal||'fox'});
 function fixKid(k){
   const d=freshKid(k.name||'Player',k.col||'#8DC3F2');Object.assign(d,k);
   d.builds=Object.assign({treehouse:[],castle:[],rocket:[]},k.builds||{});
@@ -500,6 +519,50 @@ const dstr=d=>d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());
 const today=()=>dstr(new Date());
 const daysSince=s=>s?Math.round((new Date(today())-new Date(s))/864e5):999;
 function weekId(d){const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const day=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-day);const y=t.getUTCFullYear();return y+'-W'+Math.ceil(((t-Date.UTC(y,0,1))/864e5+1)/7)}
+/* ================= animal buddies ================= */
+const EYES=(y=50,dx=12,r=4.5)=>`<circle cx="${50-dx}" cy="${y}" r="${r}" fill="#2E3440"/><circle cx="${50+dx}" cy="${y}" r="${r}" fill="#2E3440"/><circle cx="${51.5-dx}" cy="${y-1.5}" r="1.4" fill="#fff"/><circle cx="${51.5+dx}" cy="${y-1.5}" r="1.4" fill="#fff"/>`;
+const SMILE=(y=66)=>`<path d="M44 ${y} q6 5 12 0" stroke="#2E3440" stroke-width="2.5" fill="none" stroke-linecap="round"/>`;
+const CHEEKS=(y=60)=>`<circle cx="30" cy="${y}" r="5" fill="#F5A3CF" opacity=".7"/><circle cx="70" cy="${y}" r="5" fill="#F5A3CF" opacity=".7"/>`;
+const ANIMALS={
+  fox:{name:'Fox',art:`<polygon points="20,18 44,34 24,52" fill="#E8772E"/><polygon points="80,18 56,34 76,52" fill="#E8772E"/><polygon points="24,26 36,35 27,44" fill="#5B3A1A"/><polygon points="76,26 64,35 73,44" fill="#5B3A1A"/><circle cx="50" cy="56" r="30" fill="#F08A3E"/><path d="M22 58 Q50 92 78 58 Q64 70 50 70 Q36 70 22 58Z" fill="#fff"/>${EYES(50)}<ellipse cx="50" cy="64" rx="4" ry="3" fill="#2E3440"/>${SMILE(70)}`},
+  cat:{name:'Cat',art:`<polygon points="22,20 42,34 24,50" fill="#8E96A3"/><polygon points="78,20 58,34 76,50" fill="#8E96A3"/><polygon points="26,27 36,34 28,42" fill="#F5A3CF"/><polygon points="74,27 64,34 72,42" fill="#F5A3CF"/><circle cx="50" cy="56" r="30" fill="#9CA3AF"/>${EYES(52)}<polygon points="46,61 54,61 50,66" fill="#E85D75"/>${SMILE(67)}<path d="M28 62h-14M28 67h-12M72 62h14M72 67h12" stroke="#5C6475" stroke-width="1.5"/>`},
+  dog:{name:'Dog',art:`<ellipse cx="22" cy="48" rx="10" ry="20" fill="#8B5A2B" transform="rotate(15 22 48)"/><ellipse cx="78" cy="48" rx="10" ry="20" fill="#8B5A2B" transform="rotate(-15 78 48)"/><circle cx="50" cy="52" r="28" fill="#C8935F"/><ellipse cx="50" cy="66" rx="15" ry="11" fill="#F3E3CE"/>${EYES(48)}<ellipse cx="50" cy="61" rx="5" ry="3.5" fill="#2E3440"/>${SMILE(68)}<path d="M50 70 q0 6 3 7" stroke="#E85D75" stroke-width="3" fill="none"/>`},
+  owl:{name:'Owl',art:`<polygon points="24,16 36,32 22,34" fill="#6E5235"/><polygon points="76,16 64,32 78,34" fill="#6E5235"/><ellipse cx="50" cy="56" rx="32" ry="34" fill="#8B6B4A"/><ellipse cx="50" cy="70" rx="18" ry="16" fill="#D9C2A0"/><circle cx="37" cy="46" r="12" fill="#fff"/><circle cx="63" cy="46" r="12" fill="#fff"/><circle cx="37" cy="46" r="6" fill="#2E3440"/><circle cx="63" cy="46" r="6" fill="#2E3440"/><circle cx="39" cy="44" r="2" fill="#fff"/><circle cx="65" cy="44" r="2" fill="#fff"/><polygon points="45,56 55,56 50,64" fill="#F2A93B"/>`},
+  panda:{name:'Panda',art:`<circle cx="26" cy="28" r="11" fill="#2E3440"/><circle cx="74" cy="28" r="11" fill="#2E3440"/><circle cx="50" cy="54" r="31" fill="#fff" stroke="#D1D5DB" stroke-width="1.5"/><ellipse cx="37" cy="50" rx="8" ry="10" fill="#2E3440" transform="rotate(-25 37 50)"/><ellipse cx="63" cy="50" rx="8" ry="10" fill="#2E3440" transform="rotate(25 63 50)"/><circle cx="38" cy="50" r="3" fill="#fff"/><circle cx="62" cy="50" r="3" fill="#fff"/><ellipse cx="50" cy="63" rx="5" ry="3.5" fill="#2E3440"/>${SMILE(69)}${CHEEKS(64)}`},
+  rabbit:{name:'Rabbit',art:`<ellipse cx="36" cy="22" rx="8" ry="22" fill="#F3EDE6"/><ellipse cx="64" cy="22" rx="8" ry="22" fill="#F3EDE6"/><ellipse cx="36" cy="22" rx="4" ry="16" fill="#F5A3CF"/><ellipse cx="64" cy="22" rx="4" ry="16" fill="#F5A3CF"/><circle cx="50" cy="60" r="28" fill="#F3EDE6" stroke="#E0D6CA" stroke-width="1.5"/>${EYES(56,11)}<polygon points="46,64 54,64 50,68" fill="#E85D75"/><rect x="46" y="70" width="8" height="7" rx="1.5" fill="#fff" stroke="#C9C2B8"/>${CHEEKS(66)}`},
+  bear:{name:'Bear',art:`<circle cx="26" cy="28" r="12" fill="#8B5A2B"/><circle cx="74" cy="28" r="12" fill="#8B5A2B"/><circle cx="26" cy="28" r="6" fill="#D9A97A"/><circle cx="74" cy="28" r="6" fill="#D9A97A"/><circle cx="50" cy="54" r="31" fill="#A0692F"/><ellipse cx="50" cy="66" rx="14" ry="11" fill="#D9A97A"/>${EYES(48)}<ellipse cx="50" cy="61" rx="5" ry="3.5" fill="#2E3440"/>${SMILE(68)}`},
+  frog:{name:'Frog',art:`<circle cx="32" cy="32" r="13" fill="#6DBB5E"/><circle cx="68" cy="32" r="13" fill="#6DBB5E"/><ellipse cx="50" cy="60" rx="36" ry="26" fill="#7CC56F"/><circle cx="32" cy="31" r="8" fill="#fff"/><circle cx="68" cy="31" r="8" fill="#fff"/><circle cx="33" cy="32" r="4" fill="#2E3440"/><circle cx="67" cy="32" r="4" fill="#2E3440"/><path d="M30 64 q20 16 40 0" stroke="#2E3440" stroke-width="3" fill="none" stroke-linecap="round"/>${CHEEKS(60)}`},
+  lion:{name:'Lion',art:`<circle cx="50" cy="52" r="42" fill="#D98E2B"/>${[0,1,2,3,4,5,6,7,8,9,10,11].map(i=>{const a=i*Math.PI/6;return `<circle cx="${(50+38*Math.cos(a)).toFixed(1)}" cy="${(52+38*Math.sin(a)).toFixed(1)}" r="9" fill="#C97A1E"/>`}).join('')}<circle cx="50" cy="54" r="28" fill="#F7D35C"/><circle cx="30" cy="32" r="6" fill="#F7D35C"/><circle cx="70" cy="32" r="6" fill="#F7D35C"/>${EYES(50)}<ellipse cx="50" cy="65" rx="11" ry="8" fill="#FBE7B0"/><polygon points="46,60 54,60 50,65" fill="#8B5A2B"/>${SMILE(69)}`},
+  penguin:{name:'Penguin',art:`<circle cx="50" cy="52" r="34" fill="#2E3440"/><path d="M50 40 C36 26 18 40 24 60 C30 80 70 80 76 60 C82 40 64 26 50 40Z" fill="#fff"/>${EYES(52,11)}<polygon points="44,60 56,60 50,68" fill="#F2A93B"/>${CHEEKS(64)}`},
+  unicorn:{name:'Unicorn',art:`<polygon points="44,30 56,30 50,4" fill="#F7D35C" stroke="#E2A21B" stroke-width="1.5"/><polygon points="24,22 38,34 24,44" fill="#F3EDE6"/><polygon points="76,22 62,34 76,44" fill="#F3EDE6"/><circle cx="50" cy="56" r="29" fill="#F3EDE6" stroke="#E0D6CA" stroke-width="1.5"/><path d="M28 34 q-12 20 0 40" stroke="#C3A6EA" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M32 30 q-8 12 -4 22" stroke="#F5A3CF" stroke-width="6" fill="none" stroke-linecap="round"/>${EYES(52)}${SMILE(68)}${CHEEKS(62)}`},
+  dino:{name:'Dinosaur',art:`${[0,1,2,3].map(i=>`<polygon points="${30+i*12},${30-(i===1||i===2?4:0)} ${36+i*12},${16-(i===1||i===2?4:0)} ${42+i*12},${30-(i===1||i===2?4:0)}" fill="#F2A93B"/>`).join('')}<ellipse cx="50" cy="56" rx="34" ry="28" fill="#8FD3A2"/><circle cx="34" cy="64" r="3" fill="#6DBB5E"/><circle cx="66" cy="66" r="2.5" fill="#6DBB5E"/>${EYES(50,13)}<path d="M38 66 q12 10 24 0" stroke="#2E3440" stroke-width="2.5" fill="none" stroke-linecap="round"/><polygon points="44,67 48,67 46,71" fill="#fff"/><polygon points="52,67 56,67 54,71" fill="#fff"/>`}
+};
+const ANIMAL_IDS=Object.keys(ANIMALS);
+const animalOf=k=>ANIMALS[(k&&k.animal)]||ANIMALS.fox;
+const animalSVG=id=>`<svg viewBox="0 0 100 100" aria-hidden="true">${(ANIMALS[id]||ANIMALS.fox).art}</svg>`;
+const avatarHTML=k=>`<span class="avatar" style="--tc:${k.col}">${animalSVG(k.animal)}</span>`;
+function buddyHTML(text){return `${avatarHTML(S)}<span class="say">${text}</span>`}
+const CHEERS=['Yes!','Brilliant!','Spot on!','Well done!','Super!','You got it!','Amazing!'];
+function animalPicker(el,current){
+  el.innerHTML=ANIMAL_IDS.map(id=>`<button data-animal="${id}" aria-pressed="${id===current}">${animalSVG(id)}<span>${ANIMALS[id].name}</span></button>`).join('');
+}
+
+/* ================= confetti ================= */
+function confetti(){
+  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const c=document.createElement('canvas');c.setAttribute('aria-hidden','true');
+  c.style.cssText='position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50';
+  document.body.appendChild(c);const ctx=c.getContext('2d');
+  const W=c.width=innerWidth*devicePixelRatio,H=c.height=innerHeight*devicePixelRatio;
+  const cols=['#F6A5A5','#8DC3F2','#F7D35C','#8FD3A2','#C3A6EA','#F8C471'];
+  const P=Array.from({length:110},()=>({x:W/2+(Math.random()-.5)*W*.3,y:H*.35,vx:(Math.random()-.5)*W*.018,vy:-Math.random()*H*.02-H*.006,r:(4+Math.random()*5)*devicePixelRatio,c:pick(cols),a:Math.random()*6,s:Math.random()<.5}));
+  const t0=performance.now();
+  (function f(t){const dt=t-t0;ctx.clearRect(0,0,W,H);
+    P.forEach(p=>{p.vy+=H*.0006;p.x+=p.vx;p.y+=p.vy;p.a+=.15;ctx.fillStyle=p.c;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.a);
+      if(p.s)ctx.fillRect(-p.r,-p.r/2,p.r*2,p.r);else{ctx.beginPath();ctx.arc(0,0,p.r*.7,0,7);ctx.fill()}ctx.restore()});
+    if(dt<2200)requestAnimationFrame(f);else c.remove()})(t0);
+}
+
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 /* ================= facts & learning ================= */
@@ -669,8 +732,9 @@ function applyLook(){
   const r=document.documentElement;r.setAttribute('data-tint',S.tint);r.setAttribute('data-font',S.font);
   $('starCount').textContent=S.stars;
   $('whoName').textContent=S.name||'Times Table Stars';
-  $('whoAv').textContent=(S.name||'?').trim().charAt(0).toUpperCase()||'?';
+  $('whoAv').innerHTML=animalSVG(S.animal);
   $('whoAv').style.setProperty('--tc',S.col);
+  animalPicker($('setAnimals'),S.animal);
   document.querySelectorAll('[data-set]').forEach(g=>{const k=g.getAttribute('data-set');
     g.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.getAttribute('data-v')===String(S[k]))))});
   $('buildLabel').textContent='My '+proj().name.toLowerCase();
@@ -689,12 +753,15 @@ function show(id){
 document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>show(b.getAttribute('data-go'))));
 
 /* ================= who's playing ================= */
-let newCol=KID_COLS[0];
+let newCol=KID_COLS[0],newAnimal='fox';
 function renderWho(){
   const ids=Object.keys(ROOT.kids);
   $('kidPanel').hidden=!ids.length;
   $('kidList').innerHTML=ids.map(id=>{const k=ROOT.kids[id];
-    return `<button class="kid" data-kid="${id}"><span class="avatar" style="--tc:${k.col}">${esc((k.name||'?').charAt(0).toUpperCase())}</span><b>${esc(k.name)}</b><small>${STAR}${k.stars}</small></button>`}).join('');
+    return `<button class="kid" data-kid="${id}">${avatarHTML(k)}<b>${esc(k.name)}</b><small>${STAR}${k.stars}</small></button>`}).join('');
+  // suggest an animal nobody has picked yet
+  const used=new Set(ids.map(id=>ROOT.kids[id].animal));newAnimal=ANIMAL_IDS.find(a=>!used.has(a))||'fox';
+  animalPicker($('kidAnimals'),newAnimal);
   $('addTitle').textContent=ids.length?'Add another child':'Welcome to Times Table Stars! Who is going to play?';
   $('kidCols').innerHTML=KID_COLS.map(c=>`<button style="--tc:${c}" data-col="${c}" aria-label="Colour" aria-pressed="${c===newCol}"></button>`).join('');
   $('kidName').value='';
@@ -702,11 +769,15 @@ function renderWho(){
 $('kidList').addEventListener('click',e=>{const b=e.target.closest('[data-kid]');if(!b)return;switchKid(b.getAttribute('data-kid'))});
 $('kidCols').addEventListener('click',e=>{const b=e.target.closest('[data-col]');if(!b)return;newCol=b.getAttribute('data-col');
   $('kidCols').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)))});
-function switchKid(id){ROOT.cur=id;S=ROOT.kids[id];save();applyLook();show('home');sayAlways('Hello '+S.name)}
+$('kidAnimals').addEventListener('click',e=>{const b=e.target.closest('[data-animal]');if(!b)return;newAnimal=b.getAttribute('data-animal');
+  $('kidAnimals').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));sayAlways(ANIMALS[newAnimal].name)});
+$('setAnimals').addEventListener('click',e=>{const b=e.target.closest('[data-animal]');if(!b)return;S.animal=b.getAttribute('data-animal');save();applyLook();
+  sayAlways(`Hello, I’m your ${ANIMALS[S.animal].name.toLowerCase()}!`)});
+function switchKid(id){ROOT.cur=id;S=ROOT.kids[id];save();applyLook();show('home');sayAlways(`Hello ${S.name}! It’s ${animalOf(S).name}.`)}
 $('addKidBtn').onclick=()=>{
   const name=$('kidName').value.trim();
   if(!name){$('kidName').focus();$('kidName').placeholder='Type a name first';return}
-  const id='k'+Date.now().toString(36);ROOT.kids[id]=freshKid(name,newCol);switchKid(id);
+  const id='k'+Date.now().toString(36);ROOT.kids[id]=freshKid(name,newCol,newAnimal);switchKid(id);
 };
 $('kidName').addEventListener('keydown',e=>{if(e.key==='Enter')$('addKidBtn').click()});
 $('whoBtn').onclick=()=>show('who');
@@ -741,6 +812,13 @@ function renderHome(){
   $('startBtn').disabled=!S.tables.length;
   $('startBtn').textContent=S.tables.length?'Start practice':'Pick a times table first';
   renderFowCard();
+  const nx=nextPart(),A=animalOf(S).name;
+  const msg=!S.tables.length?`Hi ${esc(S.name)}! Pick a times table and let’s play.`
+    :nx&&S.stars>=nx.cost?`Hi ${esc(S.name)}! You have enough stars to build the ${nx.name.toLowerCase()}!`
+    :nx?`Hi ${esc(S.name)}! ${nx.cost-S.stars} more stars for the ${nx.name.toLowerCase()}.`
+    :`Hi ${esc(S.name)}! Let’s win some stars.`;
+  $('greetBuddy').innerHTML=buddyHTML(msg);
+  $('greetBuddy').setAttribute('aria-label',`${A}: ${stripTags(msg)}`);
 }
 $('tablePick').addEventListener('click',e=>{
   const b=e.target.closest('.chip');if(!b)return;const t=+b.getAttribute('data-t');const i=S.tables.indexOf(t);
@@ -838,18 +916,18 @@ function check(v,timedOut){
   let speech=`${a} times ${b} is ${ans}`;
   if(v===ans){
     R.right++;S.stars++;ding();
-    let head=pick(['Yes!','Brilliant!','Spot on!','Well done!']),extra='';
+    let head=pick(CHEERS),extra='';
     if(R.mode==='choice'){f.mc=true;extra='<p class="muted">Next time, try typing it.</p>'}
     else{
       f.s++;const d=today(),wasKnown=isKnown(f),newDay=!f.days.includes(d);
       if(newDay){f.days.push(d);if(f.days.length>6)f.days=f.days.slice(-6)}
       f.last=d;
-      if(!wasKnown&&isKnown(f)){head=`You know ${a} × ${b} now!`;fanfare()}
+      if(!wasKnown&&isKnown(f)){head=`You know ${a} × ${b} now!`;fanfare();confetti()}
       else if(newDay&&!isKnown(f)&&f.days.length>1)head='Right again on a new day!';
       if(!isKnown(f))extra=knowDots(f);
     }
     fb.className='feedback good pop';
-    fb.innerHTML=`<strong>${head}</strong><div class="earned">${STAR}</div>${extra}<button class="big" id="nextBtn">Next</button>`;
+    fb.innerHTML=`<div class="buddy bounce">${buddyHTML(head)}</div><div class="earned">${STAR}</div>${extra}<button class="big" id="nextBtn">Next</button>`;
   }else{
     const wasKnown=isKnown(f);
     f.s=0;f.miss++;if(wasKnown)f.days=f.days.slice(-1);
@@ -857,7 +935,7 @@ function check(v,timedOut){
     if(!R.retried[k]){R.retried[k]=1;R.q.splice(Math.min(R.q.length,R.i+3),0,[a,b,t])}
     const kinds=supportKinds(a,b);
     fb.className='feedback try pop';
-    fb.innerHTML=`<strong>${timedOut?'Let’s look at this one':'Nearly! Let’s look together'}</strong>
+    fb.innerHTML=`<div class="buddy">${buddyHTML(timedOut?'Let’s look at this one together':'Nearly! Let’s look together')}</div>
       <div class="answerline">${a} × ${b} = ${ans}</div>${supportHTML(a,b)}<button class="big" id="nextBtn">Next</button>`;
     speech+='. '+supportSpeech(a,b,kinds[0]);
   }
@@ -885,8 +963,9 @@ function showDone(title,earned,msg,again,missed){
   $('doneMsg').textContent=msg+tail;
   $('doneAgain').hidden=!(missed&&missed.length);
   $('doneAgainList').innerHTML=(missed||[]).map(k=>{const [lo,hi]=unkey(k);return `<span>${hi} × ${lo} = ${lo*hi}</span>`}).join('');
+  $('doneBuddy').innerHTML=buddyHTML(earned>=5?pick(['Hooray! What a round!','You’re a star!','Wow, look at all those stars!']):'Great try! Every go makes your brain stronger.');
   againFn=again;show('done');
-  if(earned)fanfare();
+  if(earned){fanfare();if(earned>=5)confetti()}
 }
 $('againBtn').onclick=()=>againFn();
 function finishRound(){
@@ -935,7 +1014,7 @@ function endPairs(){
   const el=$('pairsEnd');el.hidden=false;
   el.innerHTML=`<h2>All pairs found!</h2><p>You did it in <b>${PG.turns}</b> turns and earned ${earned} stars.</p><div class="earned">${STAR.repeat(earned)}</div>
     <p class="muted">${earned<4?`Finish in ${best+2} turns or fewer for 4 stars.`:'Super memory!'}</p><button class="big" id="pairsAgain">Play again</button>`;
-  $('pairsAgain').onclick=startPairs;fanfare();
+  $('pairsAgain').onclick=startPairs;fanfare();confetti();
 }
 $('pairsBtn').onclick=startPairs;
 
@@ -1098,7 +1177,7 @@ function renderBuild(){
   $('buyBtn')&&($('buyBtn').onclick=()=>{
     const x=nextPart();if(!x||S.stars<x.cost)return;
     S.stars-=x.cost;builtOf(p).push(x.id);justBuilt=x.id;save();applyLook();renderBuild();justBuilt='';
-    fanfare();sayAlways(`You built the ${x.name.toLowerCase()}!`);
+    fanfare();confetti();sayAlways(`You built the ${x.name.toLowerCase()}!`);
   });
   $('buildNext').querySelectorAll('[data-start]').forEach(b=>b.onclick=()=>{
     const id=b.getAttribute('data-start');

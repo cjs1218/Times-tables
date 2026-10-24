@@ -7,7 +7,8 @@ Open `index.html` in a browser, or turn on GitHub Pages for this repo to play it
 **Add to home screen:** open the GitHub Pages link on the tablet, then choose *Share → Add to Home Screen* (iPad) or *Install app* (Chrome). It then works offline. When you change `index.html`, bump `VERSION` in `sw.js` so devices fetch the new copy.
 
 ## Features
-- A profile for each child on a shared tablet, each with their own stars, progress and settings
+- A profile for each child on a shared tablet, each with their own animal buddy, stars, progress and settings
+- 12 animal buddies (fox, cat, dog, owl, panda, rabbit, bear, frog, lion, penguin, unicorn, dinosaur) who cheer the child on, plus confetti for big moments
 - Choose which tables to practise; each table has its own colour
 - Calm, dyslexia-friendly design: tinted page colours, Lexend, Atkinson or OpenDyslexic letters, one question at a time, read-aloud and gentle sounds
 - No timer by default; optional 12-second or 6-second (Year 4 Multiplication Tables Check) mode, starting after the question is read out
