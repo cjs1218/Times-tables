@@ -619,7 +619,7 @@ const RHYMES={
   '7x8':{t:'5, 6, 7, 8! 56 = 7 × 8. The digits count in order.',p:'steps'},
   '6x8':{t:'A whole weekend is 48 hours: Saturday is 24 hours and Sunday is 24 hours. 6 × 8 is double 3 × 8!',p:'weekend'},
   '7x7':{t:'The 7 twins live at house number 49. Next door, at 48, live 6 and 8!',p:'house49'},
-  '8x8':{t:'I ate and I ate and fell on the floor: 8 × 8 is 64.',p:'cake'},
+  '8x8':{t:'The 8 twins ate and ate till they were sick on the floor! Ate, ate, sick, floor: 8 × 8 = 64.',p:'plates',mood:'ill'},
   '6x6':{t:'6 × 6 is 36, pick up sticks!',p:'sticks'},
   '6x7':{t:'6 and 7 share a cake for two. For two, four-two: 42!',p:'fortwo'},
   '3x7':{t:'A dice has 21 dots! Opposite sides add up to 7, and there are 3 pairs: 3 × 7 = 21.',p:'dice'},
@@ -662,13 +662,15 @@ function stepsHTML(a,b,hideLast){
 const stepsSpeech=(a,b)=>{const F=friendSteps(a,b);return F?F.steps.map(s=>`${s.t.replace('×','times').replace('−','take away').replace('+','add')} makes ${s.v}`).join('. '):''};
 const stepsText=(a,b)=>{const F=friendSteps(a,b);return F?F.steps.map(s=>`${s.t} = ${s.v}`).join(', then '):''};
 
-function charSVG(n,x){
+function charSVG(n,x,mood){
   const w=64,h=84,y=18,cx=x+w/2;
   return `<g><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="18" fill="${tc(n)}" stroke="#2E3440" stroke-width="2.5"/>
   <circle cx="${cx-12}" cy="${y+20}" r="6" fill="#fff"/><circle cx="${cx+12}" cy="${y+20}" r="6" fill="#fff"/>
   <circle cx="${cx-11}" cy="${y+21}" r="3" fill="#2E3440"/><circle cx="${cx+13}" cy="${y+21}" r="3" fill="#2E3440"/>
   <text x="${cx}" y="${y+64}" text-anchor="middle" font-family="Lexend,Arial,sans-serif" font-weight="700" font-size="${n>9?28:36}" fill="#2E3440">${n}</text>
-  <path d="M${cx-9} ${y+73} q9 7 18 0" stroke="#2E3440" stroke-width="2.5" fill="none" stroke-linecap="round"/></g>`;
+  ${mood==='ill'
+    ?`<path d="M${cx-10} ${y+75} q3 -4 6 0 q3 4 6 0 q3 -4 6 0" stroke="#2E3440" stroke-width="2.5" fill="none" stroke-linecap="round"/><ellipse cx="${cx-18}" cy="${y+40}" rx="4" ry="3" fill="#8FD3A2"/><ellipse cx="${cx+18}" cy="${y+40}" rx="4" ry="3" fill="#8FD3A2"/>`
+    :`<path d="M${cx-9} ${y+73} q9 7 18 0" stroke="#2E3440" stroke-width="2.5" fill="none" stroke-linecap="round"/>`}</g>`;
 }
 function propSVG(name,cx,cy){
   const P={
@@ -696,6 +698,7 @@ function propSVG(name,cx,cy){
           `<text x="${ox}" y="${oy+r+12}" text-anchor="middle" font-family="Lexend,Arial,sans-serif" font-size="9" fill="#2E3440">24 h</text>`};
       return disk(cx-17,cy-2,15,'Sat')+disk(cx+17,cy-2,15,'Sun')+
         `<text x="${cx}" y="${cy+42}" text-anchor="middle" font-family="Lexend,Arial,sans-serif" font-weight="700" font-size="11" fill="#2E3440">48 hours</text>`})(),
+    plates:`<path d="M${cx-34} ${cy+34}h68" stroke="#8B5A2B" stroke-width="3" stroke-linecap="round"/><ellipse cx="${cx}" cy="${cy+28}" rx="26" ry="6" fill="#fff" stroke="#9CA3AF" stroke-width="1.5"/><ellipse cx="${cx}" cy="${cy+20}" rx="24" ry="5.5" fill="#fff" stroke="#9CA3AF" stroke-width="1.5"/><ellipse cx="${cx}" cy="${cy+12}" rx="22" ry="5" fill="#fff" stroke="#9CA3AF" stroke-width="1.5"/><ellipse cx="${cx+2}" cy="${cy+4}" rx="20" ry="5" fill="#fff" stroke="#9CA3AF" stroke-width="1.5"/><circle cx="${cx-6}" cy="${cy+3}" r="1.5" fill="#B5651D"/><circle cx="${cx+8}" cy="${cy+5}" r="1.2" fill="#B5651D"/><circle cx="${cx+1}" cy="${cy+2}" r="1" fill="#B5651D"/><path d="M${cx+24} ${cy-6}l6 -16M${cx+27} ${cy-6}l6 -16" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/><text x="${cx-16}" y="${cy-14}" font-family="Lexend,Arial,sans-serif" font-weight="700" font-size="13" fill="#2E3440">burp!</text>`,
     shoe:`<path d="M${cx-28} ${cy+14} V${cy-8} q8 -6 16 0 l10 10 q16 2 30 4 q4 8 0 8 Z" fill="#B5651D"/><path d="M${cx-12} ${cy-4}l6 6M${cx-6} ${cy-8}l6 6" stroke="#fff" stroke-width="2"/>`,
     star:`<path transform="translate(${cx-24} ${cy-24}) scale(2)" d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z" fill="#F7D35C" stroke="#E2A21B" stroke-width="1"/>`,
     door:`<rect x="${cx-18}" y="${cy-30}" width="36" height="54" rx="4" fill="#7A4A1E"/><circle cx="${cx+10}" cy="${cy}" r="3" fill="#F7D35C"/><path d="M${cx+24} ${cy-16}l8 -4M${cx+24} ${cy-6}l10 0M${cx+24} ${cy+4}l8 4" stroke="#2E3440" stroke-width="2.5" stroke-linecap="round"/>`,
@@ -712,7 +715,7 @@ function storySVG(a,b){
   const r=RHYMES[fkey(a,b)];if(!r)return '';
   const lo=Math.min(a,b),hi=Math.max(a,b),ans=a*b;
   return `<svg viewBox="0 0 300 120" role="img" aria-label="${stripTags(r.t)}"><rect width="300" height="120" fill="#FFF8E7"/>
-    ${charSVG(lo,8)}${propSVG(r.p,115,60)}${charSVG(hi,152)}
+    ${charSVG(lo,8,r.mood)}${propSVG(r.p,115,60)}${charSVG(hi,152,r.mood)}
     <text x="232" y="70" font-family="Lexend,Arial,sans-serif" font-weight="700" font-size="26" fill="#2E3440">=</text>
     <rect x="250" y="36" width="46" height="46" rx="12" fill="#fff" stroke="#2E3440" stroke-width="2.5"/>
     <text x="273" y="67" text-anchor="middle" font-family="Lexend,Arial,sans-serif" font-weight="700" font-size="${ans>99?17:21}" fill="#2E3440">${ans}</text></svg>`;
