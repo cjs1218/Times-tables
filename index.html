@@ -1,0 +1,1005 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+</head>
+<body>
+<title>Times Table Stars</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: one calm column, one task per screen, big touch targets. Tinted paper like dyslexia-friendly books. */
+:root{
+  --paper:#FBF3DC; --card:#FFFBEF; --ink:#2E3440; --soft:#5C6475; --line:#E3D7B4;
+  --accent:#2F6FB5; --accent-ink:#FFFFFF; --star:#E2A21B; --good:#2E8B57; --good-bg:#DDF1E4;
+  --try:#B5651D; --try-bg:#FBE7D3; --dot:#2F6FB5; --mastered:#2E8B57; --learning:#F2C14E; --new:#EDE4C9;
+  --face:"Lexend","Atkinson Hyperlegible",Verdana,Arial,sans-serif;
+}
+:root[data-tint="blue"]{--paper:#E6F0FA;--card:#F4F9FE;--line:#C9DAEC;--new:#D6E3F1}
+:root[data-tint="green"]{--paper:#E8F4E4;--card:#F5FBF3;--line:#CBE2C4;--new:#D8EBD2}
+:root[data-tint="peach"]{--paper:#FCE9DC;--card:#FFF6EF;--line:#EED2BF;--new:#F3DDCD}
+:root[data-font="atkinson"]{--face:"Atkinson Hyperlegible",Verdana,Arial,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#1F2430;--card:#2A3040;--ink:#ECE6D6;--soft:#B5B0A3;--line:#3C4457;
+  --accent:#7DB3EE;--accent-ink:#13202F;--star:#F2C14E;--good:#7FD3A0;--good-bg:#24402F;
+  --try:#F0B27A;--try-bg:#45331F;--dot:#7DB3EE;--mastered:#4FA874;--learning:#C9A23C;--new:#343B4D;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#1F2430;--card:#2A3040;--ink:#ECE6D6;--soft:#B5B0A3;--line:#3C4457;
+  --accent:#7DB3EE;--accent-ink:#13202F;--star:#F2C14E;--good:#7FD3A0;--good-bg:#24402F;
+  --try:#F0B27A;--try-bg:#45331F;--dot:#7DB3EE;--mastered:#4FA874;--learning:#C9A23C;--new:#343B4D;color-scheme:dark}
+
+html,body{background:var(--paper)}
+body{color:var(--ink);font-family:var(--face);font-size:20px;line-height:1.6;letter-spacing:.02em;word-spacing:.08em}
+.wrap{max-width:560px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:20px}
+section{display:contents}
+h1,h2{line-height:1.25;margin:0;text-wrap:balance;font-weight:700}
+h1{font-size:1.6rem} h2{font-size:1.15rem}
+p{margin:0}
+.muted{color:var(--soft);font-size:.9rem}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.starbox{display:flex;align-items:center;gap:6px;font-weight:700;font-variant-numeric:tabular-nums;font-size:1.1rem;padding:6px 10px;border-radius:999px}
+.starbox svg{width:28px;height:28px;fill:var(--star)}
+.panel{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px}
+button{font:inherit;color:inherit;cursor:pointer;border:none;background:none;-webkit-tap-highlight-color:transparent}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.tables{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.chip{min-height:56px;border-radius:14px;border:2px solid var(--line);background:var(--paper);font-size:1.3rem;font-weight:700;box-shadow:inset 0 -7px 0 var(--tc,transparent)}
+.chip[aria-pressed="true"]{background:var(--tc,var(--accent));border-color:var(--tc,var(--accent));color:#2E3440;box-shadow:none}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.pill{padding:10px 16px;border-radius:999px;border:2px solid var(--line);background:var(--paper);font-size:.95rem}
+.pill[aria-pressed="true"]{border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}
+.big{width:100%;min-height:64px;border-radius:16px;background:var(--accent);color:var(--accent-ink);font-size:1.25rem;font-weight:700}
+.big:disabled{opacity:.45;cursor:not-allowed}
+.ghost{min-height:52px;border-radius:14px;border:2px solid var(--line);background:var(--card);font-weight:500;padding:0 16px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.menu{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.menu button{min-height:72px;border-radius:16px;border:2px solid var(--line);background:var(--card);font-weight:700;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:8px;line-height:1.25}
+.menu button small{font-weight:400;font-size:.75rem;color:var(--soft)}
+.setting{display:flex;flex-direction:column;gap:8px}
+.setting>span{font-weight:500}
+
+/* play */
+.progress{display:flex;gap:6px}
+.progress i{flex:1;height:10px;border-radius:5px;background:var(--line)}
+.progress i.done{background:var(--good)}
+.progress i.now{background:var(--accent)}
+.question{text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px}
+.sum{font-size:3.6rem;font-weight:700;line-height:1.2;font-variant-numeric:tabular-nums;letter-spacing:.04em}
+.tn{border-bottom:9px solid var(--tc);padding:0 4px;border-radius:2px}
+.words{color:var(--soft);font-size:1rem}
+.answerbox{min-width:140px;min-height:76px;border-radius:16px;border:3px dashed var(--line);display:flex;align-items:center;justify-content:center;font-size:2.6rem;font-weight:700;font-variant-numeric:tabular-nums;background:var(--card)}
+.answerbox.filled{border-style:solid;border-color:var(--accent)}
+.tools{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.tools button{display:flex;align-items:center;gap:8px}
+.tools svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.choice{min-height:76px;border-radius:16px;background:var(--card);border:2px solid var(--line);font-size:2rem;font-weight:700;font-variant-numeric:tabular-nums}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.key{min-height:64px;border-radius:14px;background:var(--card);border:2px solid var(--line);font-size:1.7rem;font-weight:700}
+.key.go{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-size:1.2rem}
+.key.del{font-size:1.1rem}
+.timer{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.timer b{display:block;height:100%;width:100%;background:var(--star);transform-origin:left}
+.feedback{border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center}
+.feedback.good{background:var(--good-bg)}
+.feedback.try{background:var(--try-bg)}
+.feedback strong{font-size:1.4rem}
+.dots{display:grid;gap:5px;justify-content:center;padding:6px}
+.dots i{width:14px;height:14px;border-radius:50%;background:var(--dot)}
+.dots.small i{width:10px;height:10px}
+.trick{background:var(--paper);border-radius:12px;padding:10px 14px;font-size:.95rem;text-align:left;width:100%}
+.cue{background:var(--card);border:2px solid var(--star);border-radius:12px;padding:10px 14px;font-size:.95rem;text-align:left;width:100%}
+.cue b{color:var(--try)}
+.story{margin:0;width:100%;display:flex;flex-direction:column;gap:6px}
+.story svg{display:block;width:100%;height:auto;border-radius:12px}
+.story figcaption{font-weight:500;text-align:center}
+
+/* grid */
+.gridscroll{overflow-x:auto}
+table.facts{border-collapse:separate;border-spacing:3px;margin:0 auto;font-variant-numeric:tabular-nums}
+.facts th{font-size:.8rem;color:var(--soft);font-weight:700;width:24px;height:24px;border-radius:5px}
+.facts td{width:24px;height:24px;border-radius:5px;background:var(--new)}
+.facts td.l{background:var(--learning)}
+.facts td.m{background:var(--mastered)}
+.facts td.off{opacity:.35}
+.key-legend{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;font-size:.85rem}
+.key-legend span{display:flex;align-items:center;gap:6px}
+.key-legend i{width:16px;height:16px;border-radius:4px;display:inline-block}
+.celebrate{text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center}
+.celebrate .num{font-size:3rem;font-weight:700}
+.earned{display:flex;gap:4px;flex-wrap:wrap;justify-content:center}
+.earned svg{width:34px;height:34px;fill:var(--star)}
+
+/* building */
+.scene{border-radius:14px;overflow:hidden;border:2px solid var(--line)}
+.scene svg{display:block;width:100%;height:auto}
+.scene .new{transform-box:fill-box;transform-origin:center bottom}
+.next{display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center}
+.meter{width:100%;height:14px;border-radius:7px;background:var(--line);overflow:hidden}
+.meter b{display:block;height:100%;background:var(--star)}
+.parts{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.parts li{background:var(--paper);border-radius:12px;padding:8px 12px;display:flex;justify-content:space-between;gap:8px;font-size:.9rem}
+.parts li.got{background:var(--good-bg);font-weight:700}
+.parts li span:last-child{white-space:nowrap;font-variant-numeric:tabular-nums}
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.gallery figure{margin:0;display:flex;flex-direction:column;gap:4px;font-size:.8rem;text-align:center}
+.gallery svg{width:100%;height:auto;border-radius:10px;display:block}
+
+/* tricks */
+.count{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.count button{min-height:58px;border-radius:12px;background:var(--paper);border:2px solid var(--line);border-bottom:6px solid var(--tc);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;font-variant-numeric:tabular-nums}
+.count button b{font-size:1.4rem}
+.count button small{font-size:.7rem;color:var(--soft)}
+.count button.lit{background:var(--star);border-color:var(--star);color:#2E3440}
+.count button.lit small{color:#2E3440}
+.rhymes{display:flex;flex-direction:column;gap:14px;margin:0;padding:0;list-style:none}
+.swatch{display:inline-block;width:18px;height:18px;border-radius:5px;background:var(--tc);vertical-align:-2px;margin-right:8px}
+
+/* pairs */
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.card{min-height:84px;border-radius:14px;border:2px solid var(--line);font-weight:700;font-size:1.25rem;font-variant-numeric:tabular-nums;display:flex;align-items:center;justify-content:center;line-height:1.15;padding:4px}
+.card.down{background:var(--accent);border-color:var(--accent)}
+.card.down svg{width:30px;height:30px;fill:var(--accent-ink);opacity:.8}
+.card.q{background:var(--tc);border-color:var(--tc);color:#2E3440}
+.card.a{background:var(--card);border-color:var(--ink);font-size:1.6rem}
+.card.matched{opacity:.55}
+.statline{display:flex;justify-content:space-between;font-weight:500;font-variant-numeric:tabular-nums}
+
+/* cat */
+.catstage{display:flex;align-items:flex-end;gap:12px}
+.catstage svg{width:110px;flex:none;height:auto}
+.bubble{position:relative;background:var(--card);border:2px solid var(--ink);border-radius:18px;padding:12px 16px;font-size:1.1rem;font-weight:500;flex:1;min-width:0;margin-bottom:40px}
+.bubble::after{content:"";position:absolute;left:-12px;bottom:14px;border:10px solid transparent;border-right-color:var(--ink);border-left:0}
+
+/* fact of the week */
+.fow{border-color:var(--star)}
+.fow .eyebrow{font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--try)}
+.fow .big-fact{font-size:2.2rem;font-weight:700;text-align:center;font-variant-numeric:tabular-nums}
+
+/* grown-up */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:var(--paper);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column}
+.stat b{font-size:1.6rem;font-variant-numeric:tabular-nums;line-height:1.2}
+.stat span{font-size:.8rem;color:var(--soft)}
+.tricky{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.tricky li{background:var(--paper);border-radius:12px;padding:10px 12px;font-size:.9rem;display:flex;flex-direction:column;gap:2px}
+.tricky li b{font-size:1.05rem}
+.copytext{width:100%;min-height:140px;font:inherit;font-size:.8rem;border-radius:12px;border:2px solid var(--line);background:var(--paper);color:var(--ink);padding:10px;box-sizing:border-box}
+ul.plain{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:.95rem}
+
+@media (prefers-reduced-motion:no-preference){
+  .pop{animation:pop .35s ease-out}
+  @keyframes pop{0%{transform:scale(.9)}60%{transform:scale(1.05)}100%{transform:scale(1)}}
+  .scene .new{animation:grow .6s ease-out}
+  @keyframes grow{0%{opacity:0;transform:scale(.6)}100%{opacity:1;transform:scale(1)}}
+}
+@media (max-width:380px){.sum{font-size:3rem}.tables{grid-template-columns:repeat(3,1fr)}.card{font-size:1.05rem}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="star" viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></symbol></svg>
+
+<div class="wrap">
+  <header class="top">
+    <h1>Times Table Stars</h1>
+    <button class="starbox" id="starBtn" aria-label="Stars, open my building"><svg><use href="#star"/></svg><span id="starCount">0</span></button>
+  </header>
+
+  <!-- HOME -->
+  <section id="home">
+    <div class="panel">
+      <h2>Which times tables?</h2>
+      <p class="muted">Tap to choose. A grown-up or you can pick. Each table has its own colour.</p>
+      <div class="tables" id="tablePick"></div>
+      <div class="row">
+        <button class="pill" id="pickAll">All</button>
+        <button class="pill" id="pickEasy">2, 5, 10</button>
+        <button class="pill" id="pickNone">Clear</button>
+      </div>
+    </div>
+    <button class="big" id="startBtn">Start practice</button>
+    <div class="panel fow" id="fowCard"></div>
+    <div class="menu">
+      <button id="pairsBtn">Pairs game<small>Match the cards</small></button>
+      <button id="catBtn">Teach the cat<small>Spot the cat's mistakes</small></button>
+      <button id="buildBtnHome"><span id="buildLabel">My tree house</span><small>Spend your stars</small></button>
+      <button id="tricksBtn">Tricks<small>Rhymes and stories</small></button>
+      <button id="gridBtn">My stars grid<small>Facts I know</small></button>
+      <button id="grownBtn">Grown-ups<small>Progress summary</small></button>
+    </div>
+    <button class="ghost" id="settingsBtn">Settings</button>
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="settings" hidden>
+    <div class="panel">
+      <h2>Settings</h2>
+      <div class="setting"><span>Page colour</span><div class="row" data-set="tint">
+        <button class="pill" data-v="cream">Cream</button><button class="pill" data-v="blue">Blue</button><button class="pill" data-v="green">Green</button><button class="pill" data-v="peach">Peach</button></div></div>
+      <div class="setting"><span>Letters</span><div class="row" data-set="font">
+        <button class="pill" data-v="lexend">Lexend</button><button class="pill" data-v="atkinson">Atkinson</button></div></div>
+      <div class="setting"><span>Read questions out loud</span><div class="row" data-set="voice">
+        <button class="pill" data-v="on">On</button><button class="pill" data-v="off">Off</button></div></div>
+      <div class="setting"><span>Questions in a round</span><div class="row" data-set="length">
+        <button class="pill" data-v="5">5</button><button class="pill" data-v="10">10</button><button class="pill" data-v="15">15</button></div></div>
+      <div class="setting"><span>Timer</span><div class="row" data-set="timer">
+        <button class="pill" data-v="0">No timer</button><button class="pill" data-v="12">Relaxed (12 s)</button><button class="pill" data-v="6">Year 4 check (6 s)</button></div>
+        <p class="muted">Running out of time never loses a star. The question just comes back later.</p></div>
+      <div class="setting"><span>Start again</span>
+        <button class="ghost" id="resetBtn">Clear stars, buildings and progress</button>
+        <div class="row" id="resetConfirm" hidden><button class="pill" id="resetYes">Yes, clear it all</button><button class="pill" id="resetNo">Keep it</button></div></div>
+    </div>
+    <button class="big" data-go="home">Done</button>
+  </section>
+
+  <!-- PLAY -->
+  <section id="play" hidden>
+    <div class="progress" id="prog"></div>
+    <div class="timer" id="timerBar" hidden><b id="timerFill"></b></div>
+    <div class="question">
+      <div class="sum" id="sum">3 × 4</div>
+      <div class="words" id="words">3 times 4</div>
+    </div>
+    <div class="tools">
+      <button class="ghost" id="sayBtn"><svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>Hear it</button>
+      <button class="ghost" id="helpBtn"><svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="1.6"/><circle cx="12" cy="6" r="1.6"/><circle cx="18" cy="6" r="1.6"/><circle cx="6" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18" cy="12" r="1.6"/></svg>Show dots</button>
+    </div>
+    <div id="helpArea" hidden class="panel" style="align-items:center"></div>
+    <div id="answerArea"></div>
+    <div id="feedback" hidden></div>
+    <button class="ghost" data-go="home">Stop</button>
+  </section>
+
+  <!-- DONE -->
+  <section id="done" hidden>
+    <div class="panel celebrate pop">
+      <h2 id="doneTitle">Round finished!</h2>
+      <div class="num" id="doneScore">8 stars</div>
+      <div class="earned" id="doneStars"></div>
+      <p id="doneMsg"></p>
+    </div>
+    <button class="big" id="againBtn">Play again</button>
+    <button class="ghost" id="buildBtn2" style="min-height:60px;font-weight:700">Spend my stars</button>
+    <button class="ghost" data-go="home">Home</button>
+  </section>
+
+  <!-- PAIRS -->
+  <section id="pairs" hidden>
+    <div class="panel">
+      <h2>Pairs game</h2>
+      <p class="muted">Turn over two cards. Find each sum and its answer. Every pair is a star.</p>
+      <div class="statline"><span id="pairsTurns">Turns: 0</span><span id="pairsFound">Pairs: 0 / 6</span></div>
+    </div>
+    <div class="cards" id="cards"></div>
+    <div id="pairsEnd" hidden class="panel celebrate pop"></div>
+    <button class="ghost" data-go="home">Home</button>
+  </section>
+
+  <!-- CAT -->
+  <section id="cat" hidden>
+    <div class="progress" id="catProg"></div>
+    <div class="catstage"><div id="catPic"></div><div class="bubble" id="catSays" aria-live="polite"></div></div>
+    <div id="catArea" style="display:flex;flex-direction:column;gap:12px"></div>
+    <button class="ghost" data-go="home">Home</button>
+  </section>
+
+  <!-- BUILD -->
+  <section id="build" hidden>
+    <div class="panel">
+      <h2 id="buildTitle">My tree house</h2>
+      <div class="scene" id="scene"></div>
+      <div id="buildNext"></div>
+    </div>
+    <div class="panel">
+      <h2>Building list</h2>
+      <ul class="parts" id="partList"></ul>
+    </div>
+    <div class="panel" id="galleryPanel" hidden>
+      <h2>Finished builds</h2>
+      <div class="gallery" id="gallery"></div>
+    </div>
+    <button class="big" data-go="home">Back</button>
+  </section>
+
+  <!-- TRICKS -->
+  <section id="tricks" hidden>
+    <div class="panel">
+      <h2>Tricks to remember</h2>
+      <p class="muted">Pick a times table to see its tricks and stories.</p>
+      <div class="tables" id="trickPick"></div>
+    </div>
+    <div class="panel" id="trickBody"></div>
+    <div class="panel">
+      <h2>Good news</h2>
+      <p>Once you know the 1, 2, 5, 10 and 11 times tables, and that 3 × 7 is the same as 7 × 3, there are only <b>28</b> facts left to learn. Not 144!</p>
+    </div>
+    <button class="big" data-go="home">Back</button>
+  </section>
+
+  <!-- GRID -->
+  <section id="grid" hidden>
+    <div class="panel">
+      <h2>My times tables grid</h2>
+      <p class="muted">Each square goes green when you know it well. 7 × 8 and 8 × 7 are the same fact, so they turn green together.</p>
+      <div class="gridscroll"><table class="facts" id="factGrid"></table></div>
+      <div class="key-legend">
+        <span><i style="background:var(--new)"></i>Not yet</span>
+        <span><i style="background:var(--learning)"></i>Learning</span>
+        <span><i style="background:var(--mastered)"></i>Know it</span>
+      </div>
+      <p id="gridSummary" style="text-align:center;font-weight:700"></p>
+    </div>
+    <button class="big" data-go="home">Back</button>
+  </section>
+
+  <!-- GROWN-UP -->
+  <section id="grown" hidden>
+    <div class="panel">
+      <h2>Grown-up summary</h2>
+      <p class="muted" id="grownTables"></p>
+      <div class="stats" id="grownStats"></div>
+    </div>
+    <div class="panel">
+      <h2>Fact of the week</h2>
+      <div id="grownFow"></div>
+      <button class="ghost" id="fowChange">Choose a different fact</button>
+    </div>
+    <div class="panel">
+      <h2>Trickiest facts right now</h2>
+      <ul class="tricky" id="grownTricky"></ul>
+    </div>
+    <div class="panel">
+      <h2>Practice away from the screen</h2>
+      <ul class="plain">
+        <li>Say the rhyme for the fact of the week in the car or at bedtime.</li>
+        <li>Count in 3s, 4s or 6s while climbing stairs or bouncing a ball.</li>
+        <li>Ask one tricky fact a day, then ask it again tomorrow.</li>
+        <li>Let your child teach you a trick. Explaining it helps them remember.</li>
+        <li>Short and often beats long and rare: 5 minutes a day is plenty.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h2>Copy for school</h2>
+      <textarea class="copytext" id="copyText" readonly></textarea>
+      <button class="ghost" id="copyBtn">Copy summary</button>
+    </div>
+    <button class="big" data-go="home">Back</button>
+  </section>
+</div>
+
+<script>
+(function(){
+'use strict';
+const KEY='tts-v1';
+const defaults={tables:[2,5,10],tint:'cream',font:'lexend',voice:'on',length:'10',timer:'0',stars:0,facts:{},
+  builds:{treehouse:[],castle:[],rocket:[]},project:'treehouse',fow:null,log:[]};
+let S=load();
+function load(){
+  const d=JSON.parse(JSON.stringify(defaults));
+  try{const r=JSON.parse(localStorage.getItem(KEY));if(r&&typeof r==='object'){Object.assign(d,r);
+    d.builds=Object.assign({treehouse:[],castle:[],rocket:[]},r.builds||{});
+    if(Array.isArray(r.built)&&!d.builds.treehouse.length)d.builds.treehouse=r.built;
+    delete d.built;if(!Array.isArray(d.log))d.log=[];}}catch(e){}
+  return d;
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+const $=id=>document.getElementById(id);
+const STAR='<svg><use href="#star"/></svg>';
+const MASTER=3;
+const TRICKY=[3,4,6,7,8,9,12];
+const TC={1:'#CFC7BC',2:'#F6A5A5',3:'#8DC3F2',4:'#F8C471',5:'#F7E07A',6:'#C3A6EA',7:'#8FD3A2',8:'#F5A3CF',9:'#7FD8D4',10:'#B9D97E',11:'#E3B892',12:'#A9B7F5'};
+const tc=n=>TC[n]||'#CFC7BC';
+const pick=arr=>arr[Math.floor(Math.random()*arr.length)];
+const shuffle=arr=>{for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr};
+const pad2=n=>String(n).padStart(2,'0');
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate())};
+function weekId(d){const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const day=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-day);const y=t.getUTCFullYear();return y+'-W'+Math.ceil(((t-Date.UTC(y,0,1))/864e5+1)/7)}
+
+/* ---------------- facts ---------------- */
+function fkey(a,b){return Math.min(a,b)+'x'+Math.max(a,b)}
+function unkey(k){return k.split('x').map(Number)}
+function fact(a,b){const k=fkey(a,b);return S.facts[k]||(S.facts[k]={s:0,seen:0,miss:0})}
+function pool(){const seen={},list=[];S.tables.forEach(t=>{for(let n=1;n<=12;n++){const k=fkey(t,n);if(!seen[k]){seen[k]=1;list.push([t,n])}}});return list}
+function weakScore(k){const f=S.facts[k];const [a,b]=unkey(k);const hard=(TRICKY.includes(a)&&TRICKY.includes(b))?2:0;
+  if(!f||!f.seen)return 1+hard;if(f.s>=MASTER)return -1;return 2+f.miss*2+(MASTER-f.s)+hard}
+function weight(p){const f=S.facts[fkey(p[0],p[1])];if(!f)return 4;if(f.s>=MASTER)return 1;return 3+(MASTER-f.s)*2+Math.min(f.miss,3)}
+function tableOf(a,b){return S.tables.includes(a)?a:(S.tables.includes(b)?b:Math.max(a,b))}
+
+/* ---------------- tricks, rhymes, stories ---------------- */
+const TRICKS={
+  1:'Anything times 1 stays the same.',
+  2:'Times 2 is doubling. 6 × 2 is 6 + 6.',
+  3:'Count in 3s: 3, 6, 9, 12, 15, 18…',
+  4:'Times 4 is double, then double again.',
+  5:'Times 5 answers always end in 5 or 0. Think of minutes on a clock.',
+  6:'Times 6 is times 3, then double it.',
+  7:'Tricky one! Use a fact you know: 7 × 6 is 5 × 6 plus two more 6s.',
+  8:'Times 8 is double, double, double.',
+  9:'Times 9: hold up 10 fingers and fold down finger 4 for 9 × 4. 3 fingers before the fold, 6 after: 36. The two digits always add up to 9.',
+  10:'Times 10: the digits move up a place and a 0 fills the gap.',
+  11:'Up to 9, times 11 is the digit twice: 11 × 4 = 44.',
+  12:'Times 12 is times 10 plus times 2. 12 × 3 is 30 + 6.'
+};
+// key: smaller×bigger. p = picture prop for the story card
+const RHYMES={
+  '3x4':{t:'1, 2, 3, 4! 12 = 3 × 4. The digits count in order.',p:'steps'},
+  '7x8':{t:'5, 6, 7, 8! 56 = 7 × 8. The digits count in order.',p:'steps'},
+  '6x8':{t:'6 and 8 went on a date, came back at 48.',p:'heart'},
+  '7x7':{t:'7 and 7 went to dine, came home at 49.',p:'plate'},
+  '8x8':{t:'I ate and I ate and fell on the floor: 8 × 8 is 64.',p:'cake'},
+  '6x6':{t:'6 × 6 is 36, pick up sticks!',p:'sticks'},
+  '6x7':{t:'6 × 7 is 42, lost my shoe!',p:'shoe'},
+  '3x7':{t:'3 × 7 is 21, now it’s fun!',p:'star'},
+  '3x8':{t:'3 × 8 is 24, knock on the door.',p:'door'},
+  '4x6':{t:'4 × 6 is 24 too. Same answer as 3 × 8.',p:'door'},
+  '4x7':{t:'4 weeks of 7 days is 28 days, like February.',p:'calendar'},
+  '4x8':{t:'4 × 8 = 32. Think 8, 16, 32: double, double.',p:'arrows'},
+  '6x9':{t:'Fold finger 6: 5 fingers, then 4 fingers. 54.',p:'hand'},
+  '7x9':{t:'Fold finger 7: 6 fingers, then 3 fingers. 63.',p:'hand'},
+  '8x9':{t:'Fold finger 8: 7 fingers, then 2 fingers. 72.',p:'hand'},
+  '9x9':{t:'81 is 18 turned around. 9 × 2 = 18 and 9 × 9 = 81 are mirror twins.',p:'mirror'},
+  '5x5':{t:'25 minutes: the big hand on the 5.',p:'clock'},
+  '12x12':{t:'144. Twelve 12s is called a gross.',p:'box'},
+  '11x11':{t:'11 × 11 = 121. It reads the same both ways.',p:'mirror'}
+};
+const rhymeText=(a,b)=>(RHYMES[fkey(a,b)]||{}).t||'';
+
+function friendCue(a,b){
+  const easy=[1,2,5,10,11];
+  if(easy.includes(a)||easy.includes(b))return '';
+  const m=Math.max(a,b),n=Math.min(a,b);
+  if(m===12)return `Friend fact: 10 × ${n} = ${10*n}. Add 2 × ${n} = ${2*n}. That makes <b>${12*n}</b>.`;
+  if(m===9)return `Friend fact: 10 × ${n} = ${10*n}. Take away one ${n}. That makes <b>${9*n}</b>.`;
+  if(m===8)return `Double ${n} three times: ${n} → ${2*n} → ${4*n} → <b>${8*n}</b>.`;
+  if(m===7)return `Friend fact: 5 × ${n} = ${5*n}. Add 2 more ${n}s (${2*n}). That makes <b>${7*n}</b>.`;
+  if(m===6)return `Friend fact: 5 × ${n} = ${5*n}. Add one more ${n}. That makes <b>${6*n}</b>.`;
+  if(m===4)return `Double ${n} twice: ${n} → ${2*n} → <b>${4*n}</b>.`;
+  if(m===3)return `Friend fact: 2 × ${n} = ${2*n}. Add one more ${n}. That makes <b>${3*n}</b>.`;
+  return '';
+}
+const stripTags=s=>s.replace(/<[^>]+>/g,'');
+
+// Picture story card: two number characters, a prop, and the answer.
+function charSVG(n,x,mood){
+  const w=64,h=84,y=18,cx=x+w/2;
+  return `<g><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="18" fill="${tc(n)}" stroke="#2E3440" stroke-width="2.5"/>
+  <circle cx="${cx-12}" cy="${y+20}" r="6" fill="#fff"/><circle cx="${cx+12}" cy="${y+20}" r="6" fill="#fff"/>
+  <circle cx="${cx-11}" cy="${y+21}" r="3" fill="#2E3440"/><circle cx="${cx+13}" cy="${y+21}" r="3" fill="#2E3440"/>
+  <text x="${cx}" y="${y+64}" text-anchor="middle" font-family="Lexend,Arial,sans-serif" font-weight="700" font-size="${n>9?28:36}" fill="#2E3440">${n}</text>
+  <path d="M${cx-9} ${y+73} q9 ${mood==='sad'?-5:7} 18 0" stroke="#2E3440" stroke-width="2.5" fill="none" stroke-linecap="round"/></g>`;
+}
+function propSVG(name,cx,cy){
+  const P={
+    heart:`<path d="M${cx} ${cy+20} C${cx-32} ${cy-2} ${cx-16} ${cy-28} ${cx} ${cy-10} C${cx+16} ${cy-28} ${cx+32} ${cy-2} ${cx} ${cy+20}Z" fill="#E85D75"/>`,
+    plate:`<ellipse cx="${cx}" cy="${cy+6}" rx="28" ry="14" fill="#fff" stroke="#9CA3AF" stroke-width="2"/><ellipse cx="${cx}" cy="${cy+6}" rx="16" ry="7" fill="#F3EBD3"/><path d="M${cx-38} ${cy-18}v34M${cx+38} ${cy-18}v34" stroke="#9CA3AF" stroke-width="3" stroke-linecap="round"/>`,
+    cake:`<rect x="${cx-24}" y="${cy-6}" width="48" height="26" rx="4" fill="#F5A3CF"/><rect x="${cx-24}" y="${cy-6}" width="48" height="8" fill="#fff"/><path d="M${cx} ${cy-6}v-12" stroke="#E2A21B" stroke-width="3"/><circle cx="${cx}" cy="${cy-21}" r="3.5" fill="#F2A93B"/>`,
+    sticks:`<path d="M${cx-26} ${cy+18}L${cx+18} ${cy-20}M${cx-20} ${cy-18}L${cx+26} ${cy+16}M${cx-28} ${cy+2}H${cx+28}" stroke="#8B5A2B" stroke-width="6" stroke-linecap="round"/>`,
+    shoe:`<path d="M${cx-28} ${cy+14} V${cy-8} q8 -6 16 0 l10 10 q16 2 30 4 q4 8 0 8 Z" fill="#B5651D"/><path d="M${cx-12} ${cy-4}l6 6M${cx-6} ${cy-8}l6 6" stroke="#fff" stroke-width="2"/>`,
+    star:`<path transform="translate(${cx-24} ${cy-24}) scale(2)" d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z" fill="#F7D35C" stroke="#E2A21B" stroke-width="1"/>`,
+    door:`<rect x="${cx-18}" y="${cy-30}" width="36" height="54" rx="4" fill="#7A4A1E"/><circle cx="${cx+10}" cy="${cy}" r="3" fill="#F7D35C"/><path d="M${cx+24} ${cy-16}l8 -4M${cx+24} ${cy-6}l10 0M${cx+24} ${cy+4}l8 4" stroke="#2E3440" stroke-width="2.5" stroke-linecap="round"/>`,
+    calendar:`<rect x="${cx-24}" y="${cy-24}" width="48" height="48" rx="6" fill="#fff" stroke="#2E3440" stroke-width="2"/><rect x="${cx-24}" y="${cy-24}" width="48" height="13" rx="4" fill="#E04F4F"/><text x="${cx}" y="${cy+18}" text-anchor="middle" font-family="Lexend,Arial,sans-serif" font-weight="700" font-size="20" fill="#2E3440">28</text>`,
+    arrows:`<path d="M${cx-28} ${cy}h18M${cx-14} ${cy-6}l6 6-6 6M${cx-4} ${cy}h18M${cx+10} ${cy-6}l6 6-6 6" stroke="#2F6FB5" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><text x="${cx}" y="${cy-14}" text-anchor="middle" font-family="Lexend,Arial,sans-serif" font-size="11" fill="#2E3440">double</text>`,
+    hand:`<rect x="${cx-20}" y="${cy-2}" width="40" height="28" rx="10" fill="#F2C9A0"/>${[0,1,2,3].map(i=>`<rect x="${cx-19+i*10}" y="${i===1?cy-6:cy-26}" width="8" height="${i===1?10:28}" rx="4" fill="${i===1?'#D9A97A':'#F2C9A0'}"/>`).join('')}<rect x="${cx+18}" y="${cy-2}" width="8" height="18" rx="4" fill="#F2C9A0" transform="rotate(-30 ${cx+22} ${cy+8})"/>`,
+    mirror:`<ellipse cx="${cx}" cy="${cy}" rx="20" ry="28" fill="#BFE3F7" stroke="#B5651D" stroke-width="5"/><path d="M${cx-8} ${cy-12}l10 -8M${cx-6} ${cy-2}l12 -10" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`,
+    clock:`<circle cx="${cx}" cy="${cy}" r="26" fill="#fff" stroke="#2E3440" stroke-width="2.5"/><path d="M${cx} ${cy}v-17M${cx} ${cy}l11 19" stroke="#2E3440" stroke-width="3" stroke-linecap="round"/><text x="${cx+12}" y="${cy+20}" font-family="Lexend,Arial,sans-serif" font-size="9" fill="#E04F4F">5</text>`,
+    steps:[0,1,2,3].map(i=>`<rect x="${cx-28+i*14}" y="${cy+16-i*12}" width="14" height="${12+i*12}" fill="${['#8DC3F2','#F8C471','#C3A6EA','#8FD3A2'][i]}" stroke="#2E3440" stroke-width="1.5"/>`).join(''),
+    box:`<rect x="${cx-24}" y="${cy-18}" width="48" height="40" rx="3" fill="#D9A45B" stroke="#8B5A2B" stroke-width="2"/><path d="M${cx-24} ${cy-6}h48M${cx} ${cy-18}v12" stroke="#8B5A2B" stroke-width="2"/><text x="${cx}" y="${cy+16}" text-anchor="middle" font-family="Lexend,Arial,sans-serif" font-weight="700" font-size="12" fill="#2E3440">144</text>`
+  };
+  return P[name]||P.star;
+}
+function storySVG(a,b){
+  const r=RHYMES[fkey(a,b)];if(!r)return '';
+  const lo=Math.min(a,b),hi=Math.max(a,b),ans=a*b;
+  return `<svg viewBox="0 0 300 120" role="img" aria-label="${stripTags(r.t)}"><rect width="300" height="120" fill="#FFF8E7"/>
+    ${charSVG(lo,8)}${propSVG(r.p,115,60)}${charSVG(hi,152)}
+    <text x="232" y="70" font-family="Lexend,Arial,sans-serif" font-weight="700" font-size="26" fill="#2E3440">=</text>
+    <rect x="250" y="36" width="46" height="46" rx="12" fill="#fff" stroke="#2E3440" stroke-width="2.5"/>
+    <text x="273" y="67" text-anchor="middle" font-family="Lexend,Arial,sans-serif" font-weight="700" font-size="${ans>99?17:21}" fill="#2E3440">${ans}</text></svg>`;
+}
+function storyHTML(a,b){const r=RHYMES[fkey(a,b)];if(!r)return '';return `<figure class="story">${storySVG(a,b)}<figcaption>${r.t}</figcaption></figure>`}
+function cueHTML(a,b){
+  const st=storyHTML(a,b),f=friendCue(a,b);let h='';
+  if(st)h+=st;
+  if(f)h+=`<div class="cue">${f}</div>`;
+  if(!h)h=`<div class="trick">${TRICKS[tableOf(a,b)]||''}</div>`;
+  return h;
+}
+
+/* ---------------- speech ---------------- */
+function say(text){try{if(!('speechSynthesis' in window)||S.voice!=='on')return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.rate=.85;u.lang='en-GB';speechSynthesis.speak(u)}catch(e){}}
+function sayAlways(text){const v=S.voice;S.voice='on';say(text);S.voice=v}
+
+/* ---------------- look & navigation ---------------- */
+function applyLook(){
+  const r=document.documentElement;r.setAttribute('data-tint',S.tint);r.setAttribute('data-font',S.font);
+  $('starCount').textContent=S.stars;
+  document.querySelectorAll('[data-set]').forEach(g=>{const k=g.getAttribute('data-set');
+    g.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.getAttribute('data-v')===String(S[k]))))});
+  $('buildLabel').textContent='My '+proj().name.toLowerCase();
+}
+const SCREENS=['home','settings','play','done','grid','tricks','build','pairs','cat','grown'];
+function show(id){
+  SCREENS.forEach(s=>{$(s).hidden=(s!==id)});
+  if(id!=='play')stopTimer();
+  if(id!=='tricks')stopCount();
+  if(id!=='pairs')clearTimeout(pairTimer);
+  activePad=null;
+  ({home:renderHome,grid:renderGrid,tricks:renderTricks,build:renderBuild,grown:renderGrown})[id]?.();
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>show(b.getAttribute('data-go'))));
+
+/* ---------------- number pad (shared) ---------------- */
+let activePad=null;
+function mountPad(el,onSubmit){
+  let k='';[1,2,3,4,5,6,7,8,9].forEach(n=>{k+=`<button class="key" data-k="${n}">${n}</button>`});
+  k+='<button class="key del" data-k="del" aria-label="Delete">Delete</button><button class="key" data-k="0">0</button><button class="key go" data-k="ok">Check</button>';
+  el.innerHTML='<div style="display:flex;justify-content:center;margin-bottom:14px"><div class="answerbox" aria-live="polite">?</div></div><div class="pad">'+k+'</div>';
+  const box=el.querySelector('.answerbox');
+  const P={typed:'',done:false,
+    press(v){if(P.done)return;
+      if(v==='del')P.typed=P.typed.slice(0,-1);
+      else if(v==='ok'){if(P.typed){P.done=true;activePad=null;onSubmit(+P.typed)}return}
+      else if(P.typed.length<3)P.typed+=v;
+      box.textContent=P.typed||'?';box.classList.toggle('filled',!!P.typed)}};
+  el.onclick=e=>{const b=e.target.closest('.key');if(b)P.press(b.getAttribute('data-k'))};
+  activePad=P;
+}
+document.addEventListener('keydown',e=>{
+  if(!activePad)return;
+  if(/^[0-9]$/.test(e.key))activePad.press(e.key);
+  else if(e.key==='Backspace')activePad.press('del');
+  else if(e.key==='Enter')activePad.press('ok');
+});
+
+/* ---------------- home ---------------- */
+function renderPick(){
+  let h='';for(let i=1;i<=12;i++)h+=`<button class="chip" style="--tc:${tc(i)}" data-t="${i}" aria-pressed="${S.tables.includes(i)}">${i}</button>`;
+  $('tablePick').innerHTML=h;
+  $('startBtn').disabled=!S.tables.length;
+  $('startBtn').textContent=S.tables.length?'Start practice':'Pick a times table first';
+}
+function renderHome(){renderPick();renderFowCard()}
+$('tablePick').addEventListener('click',e=>{
+  const b=e.target.closest('.chip');if(!b)return;const t=+b.getAttribute('data-t');const i=S.tables.indexOf(t);
+  if(i>-1)S.tables.splice(i,1);else S.tables.push(t);S.tables.sort((a,b)=>a-b);save();renderHome();
+});
+$('pickAll').onclick=()=>{S.tables=[1,2,3,4,5,6,7,8,9,10,11,12];save();renderHome()};
+$('pickEasy').onclick=()=>{S.tables=[2,5,10];save();renderHome()};
+$('pickNone').onclick=()=>{S.tables=[];save();renderHome()};
+
+/* ---------------- settings ---------------- */
+document.querySelectorAll('[data-set]').forEach(g=>g.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;S[g.getAttribute('data-set')]=b.getAttribute('data-v');save();applyLook()}));
+$('settingsBtn').onclick=()=>show('settings');
+$('resetBtn').onclick=()=>{$('resetConfirm').hidden=false};
+$('resetNo').onclick=()=>{$('resetConfirm').hidden=true};
+$('resetYes').onclick=()=>{const keep={tables:S.tables,tint:S.tint,font:S.font,voice:S.voice,length:S.length,timer:S.timer};
+  S=Object.assign(JSON.parse(JSON.stringify(defaults)),keep);save();applyLook();$('resetConfirm').hidden=true};
+
+/* ---------------- fact of the week ---------------- */
+function chooseFow(exclude){
+  const P=pool();if(!P.length)return null;
+  const keys=[...new Set(P.map(p=>fkey(p[0],p[1])))].filter(k=>k!==exclude);
+  if(!keys.length)return null;
+  keys.sort((x,y)=>(weakScore(y)+Math.random()*.5)-(weakScore(x)+Math.random()*.5));
+  return keys[0];
+}
+function getFow(){
+  const wk=weekId(new Date());
+  const inPool=S.fow&&pool().some(p=>fkey(p[0],p[1])===S.fow.key);
+  if(!S.fow||S.fow.week!==wk||!inPool){const k=chooseFow();S.fow=k?{week:wk,key:k}:null;save()}
+  return S.fow;
+}
+function renderFowCard(){
+  const f=getFow(),el=$('fowCard');
+  if(!f){el.hidden=true;return}el.hidden=false;
+  const [a,b]=unkey(f.key);const lo=Math.min(a,b),hi=Math.max(a,b);
+  const st=storyHTML(lo,hi),fc=friendCue(lo,hi);
+  el.innerHTML=`<span class="eyebrow">Fact of the week</span>
+    ${st||`<div class="big-fact"><span class="tn" style="--tc:${tc(hi)}">${hi}</span> × ${lo} = ${a*b}</div>`}
+    ${fc?`<div class="cue">${fc}</div>`:(st?'':`<div class="trick">${TRICKS[hi]}</div>`)}
+    <div class="two"><button class="ghost" id="fowSay">Hear it</button><button class="ghost" id="fowPlay">Practise it</button></div>`;
+  $('fowSay').onclick=()=>sayAlways(`${hi} times ${lo} is ${a*b}. ${stripTags(rhymeText(lo,hi))}`);
+  $('fowPlay').onclick=startRound;
+}
+
+/* ---------------- practice round ---------------- */
+let R=null,timerId=null;
+function pickRound(n){
+  const P=pool(),out=[];let last='';
+  for(let i=0;i<n;i++){
+    let tot=0;const ws=P.map(p=>{const w=fkey(p[0],p[1])===last&&P.length>1?0:weight(p);tot+=w;return w});
+    let r=Math.random()*tot,j=0;while(j<ws.length-1&&r>ws[j]){r-=ws[j];j++}
+    const p=P[j];last=fkey(p[0],p[1]);
+    out.push(Math.random()<.5?[p[1],p[0],p[0]]:[p[0],p[1],p[0]]);
+  }
+  const f=getFow();
+  if(f&&n>=5){const [a,b]=unkey(f.key);const t=tableOf(a,b),o=t===a?b:a;out[1]=[t,o,t];out[n-2]=[o,t,t]}
+  return out;
+}
+function startRound(){
+  if(!S.tables.length){show('home');return}
+  const n=+S.length;
+  R={q:pickRound(n),i:0,right:0,retried:{}};
+  show('play');ask();
+}
+$('startBtn').onclick=startRound;
+function renderProg(el,len,i){let h='';for(let k=0;k<len;k++)h+=`<i class="${k<i?'done':k===i?'now':''}"></i>`;el.innerHTML=h}
+const numSpan=(n,t)=>n===t?`<span class="tn" style="--tc:${tc(t)}">${n}</span>`:String(n);
+function ask(){
+  if(R.i>=R.q.length)return finishRound();
+  const [a,b,t]=R.q[R.i];R.answered=false;
+  renderProg($('prog'),R.q.length,R.i);
+  $('sum').innerHTML=numSpan(a,t)+' × '+(a===b?String(b):numSpan(b,t));
+  $('words').textContent=a+' times '+b;
+  $('helpArea').hidden=true;$('feedback').hidden=true;
+  if(fact(a,b).s===0)renderChoices(a,b);else mountPad($('answerArea'),v=>check(v));
+  say(a+' times '+b);
+  startTimer();
+}
+function wrongOptions(a,b){
+  const ans=a*b,c=[ans+a,ans-a,ans+b,ans-b,ans+1,ans-1,ans+10,ans-10];
+  if(ans>9){const r=+String(ans).split('').reverse().join('');if(r!==ans)c.push(r)}
+  return shuffle([...new Set(c.filter(x=>x>0&&x!==ans))]);
+}
+function renderChoices(a,b){
+  const ans=a*b,opts=[ans,...wrongOptions(a,b).slice(0,3)];
+  shuffle(opts);
+  const el=$('answerArea');
+  el.innerHTML='<p class="muted" style="text-align:center;margin-bottom:10px">Tap the answer</p><div class="choices">'+opts.map(o=>`<button class="choice" data-v="${o}">${o}</button>`).join('')+'</div>';
+  el.onclick=e=>{const c=e.target.closest('.choice');if(c&&!R.answered)check(+c.getAttribute('data-v'))};
+}
+function dotsHTML(a,b){const small=a*b>60;let h=`<div class="dots${small?' small':''}" style="grid-template-columns:repeat(${b},auto)">`;for(let i=0;i<a*b;i++)h+='<i></i>';return h+'</div>'}
+$('helpBtn').onclick=()=>{
+  const [a,b]=R.q[R.i],area=$('helpArea');
+  if(!area.hidden){area.hidden=true;return}
+  const f=friendCue(a,b).replace(/That makes <b>\d+<\/b>\./,'What does that make?').replace(/→ <b>\d+<\/b>\./,'→ ?');
+  area.innerHTML=`<p style="font-weight:500">${a} rows of ${b}</p>${dotsHTML(a,b)}`+(f?`<div class="cue">${f}</div>`:`<div class="trick">${TRICKS[tableOf(a,b)]||''}</div>`);
+  area.hidden=false;
+};
+$('sayBtn').onclick=()=>{const q=R.q[R.i];sayAlways(q[0]+' times '+q[1])};
+
+function check(v,timedOut){
+  if(R.answered)return;R.answered=true;stopTimer();activePad=null;
+  const [a,b,t]=R.q[R.i],ans=a*b,f=fact(a,b),fb=$('feedback'),k=fkey(a,b);f.seen++;
+  if(v===ans){
+    f.s++;R.right++;S.stars++;
+    const nowKnown=f.s===MASTER;
+    fb.className='feedback good pop';
+    fb.innerHTML=`<strong>${nowKnown?`You know ${a} × ${b} now!`:pick(['Yes!','Brilliant!','Spot on!','Well done!'])}</strong><div class="earned">${STAR}</div>`+
+      (f.s<MASTER?storyHTML(a,b):'')+'<button class="big" id="nextBtn">Next</button>';
+  }else{
+    f.s=0;f.miss++;
+    if(!R.retried[k]){R.retried[k]=1;R.q.splice(Math.min(R.q.length,R.i+3),0,[a,b,t])}
+    fb.className='feedback try pop';
+    fb.innerHTML=`<strong>${timedOut?'Let’s look at this one':'Nearly! Let’s look together'}</strong>
+      <p style="font-size:1.6rem;font-weight:700">${a} × ${b} = ${ans}</p>${dotsHTML(a,b)}${cueHTML(a,b)}
+      <p class="muted">This one will come back soon.</p><button class="big" id="nextBtn">Next</button>`;
+  }
+  say(`${a} times ${b} is ${ans}`);
+  save();applyLook();
+  $('answerArea').innerHTML='';$('helpArea').hidden=true;fb.hidden=false;
+  $('nextBtn').onclick=()=>{R.i++;ask()};
+  $('nextBtn').focus();
+}
+function startTimer(){
+  stopTimer();const secs=+S.timer;$('timerBar').hidden=!secs;if(!secs)return;
+  const fill=$('timerFill'),t0=performance.now();
+  timerId=setInterval(()=>{const p=1-(performance.now()-t0)/(secs*1000);fill.style.transform=`scaleX(${Math.max(0,p)})`;
+    if(p<=0){stopTimer();if(!R.answered)check(null,true)}},100);
+}
+function stopTimer(){if(timerId){clearInterval(timerId);timerId=null}}
+function logRound(mode,n,r){S.log.push({d:today(),m:mode,n,r});if(S.log.length>120)S.log=S.log.slice(-120);save()}
+let againFn=startRound;
+function showDone(title,earned,msg,again){
+  $('doneTitle').textContent=title;
+  $('doneScore').textContent=earned+(earned===1?' star':' stars');
+  $('doneStars').innerHTML=STAR.repeat(Math.min(earned,30));
+  const nx=nextPart();let tail='';
+  if(nx)tail=S.stars>=nx.cost?` You have enough stars to build the ${nx.name.toLowerCase()}!`:` ${nx.cost-S.stars} more stars to build the ${nx.name.toLowerCase()}.`;
+  $('doneMsg').textContent=msg+tail;
+  againFn=again;show('done');
+}
+$('againBtn').onclick=()=>againFn();
+function finishRound(){
+  const asked=R.q.length;logRound('practice',asked,R.right);
+  showDone('Round finished!',R.right,R.right>=asked-1?'Fantastic round.':'Great practice. Every try helps your brain remember.',startRound);
+}
+
+/* ---------------- pairs game ---------------- */
+let PG=null,pairTimer=null;
+function startPairs(){
+  if(!S.tables.length){show('home');return}
+  const P=pool().map(p=>[p[0],p[1],weakScore(fkey(p[0],p[1]))+Math.random()*3]).sort((x,y)=>y[2]-x[2]);
+  const chosen=[],prods=new Set();
+  for(const [t,n] of P){if(chosen.length>=6)break;if(prods.has(t*n))continue;prods.add(t*n);chosen.push([t,n])}
+  const cards=[];
+  chosen.forEach(([t,n],i)=>{const [a,b]=Math.random()<.5?[t,n]:[n,t];
+    cards.push({id:i,kind:'q',text:`${a} × ${b}`,say:`${a} times ${b}`,t});cards.push({id:i,kind:'a',text:String(t*n),say:String(t*n)})});
+  PG={cards:shuffle(cards),open:[],matched:new Set(),turns:0,total:chosen.length,busy:false};
+  $('pairsEnd').hidden=true;show('pairs');renderPairs();
+}
+function renderPairs(){
+  $('cards').innerHTML=PG.cards.map((c,i)=>{
+    const up=PG.open.includes(i)||PG.matched.has(c.id);
+    if(!up)return `<button class="card down" data-i="${i}" aria-label="Hidden card">${'<svg viewBox="0 0 24 24"><use href="#star"/></svg>'}</button>`;
+    return `<button class="card ${c.kind}${PG.matched.has(c.id)?' matched':''}" data-i="${i}" ${c.kind==='q'?`style="--tc:${tc(c.t)}"`:''}>${c.text}</button>`;
+  }).join('');
+  $('pairsTurns').textContent='Turns: '+PG.turns;
+  $('pairsFound').textContent=`Pairs: ${PG.matched.size} / ${PG.total}`;
+}
+$('cards').addEventListener('click',e=>{
+  const b=e.target.closest('.card');if(!b||PG.busy)return;const i=+b.getAttribute('data-i'),c=PG.cards[i];
+  if(PG.matched.has(c.id)||PG.open.includes(i))return;
+  PG.open.push(i);say(c.say);renderPairs();
+  if(PG.open.length===2){
+    PG.turns++;const [x,y]=PG.open.map(j=>PG.cards[j]);
+    if(x.id===y.id){PG.matched.add(x.id);PG.open=[];S.stars++;save();applyLook();renderPairs();
+      const q=x.kind==='q'?x:y;setTimeout(()=>say(q.say+' is '+(x.kind==='a'?x.text:y.text)),500);
+      if(PG.matched.size===PG.total)endPairs();}
+    else{PG.busy=true;pairTimer=setTimeout(()=>{PG.open=[];PG.busy=false;renderPairs()},1400)}
+  }
+});
+function endPairs(){
+  logRound('pairs',PG.total,PG.total);
+  const el=$('pairsEnd');el.hidden=false;
+  el.innerHTML=`<h2>All pairs found!</h2><p>You did it in <b>${PG.turns}</b> turns and earned ${PG.total} stars.</p><div class="earned">${STAR.repeat(PG.total)}</div>
+    <button class="big" id="pairsAgain">Play again</button>`;
+  $('pairsAgain').onclick=startPairs;
+}
+$('pairsBtn').onclick=startPairs;
+
+/* ---------------- teach the cat ---------------- */
+function catSVG(mood){
+  const eye=mood==='happy'?'<path d="M40 58 q6 -6 12 0M68 58 q6 -6 12 0" stroke="#F7D35C" stroke-width="3.5" fill="none" stroke-linecap="round"/>'
+    :`<circle cx="46" cy="58" r="6" fill="#F7D35C"/><circle cx="74" cy="58" r="6" fill="#F7D35C"/><circle cx="46" cy="59" r="2.6" fill="#1D1D1D"/><circle cx="74" cy="59" r="2.6" fill="#1D1D1D"/>`;
+  const mouth=mood==='puzzled'?'<path d="M54 76 q6 -3 12 0" stroke="#F5A3CF" stroke-width="2.5" fill="none"/>':'<path d="M54 74 q6 6 12 0" stroke="#F5A3CF" stroke-width="2.5" fill="none"/>';
+  return `<svg viewBox="0 0 120 140" role="img" aria-label="The cat"><path d="M100 120 q20 -10 10 -40" stroke="#3D3D3D" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <ellipse cx="60" cy="112" rx="40" ry="26" fill="#3D3D3D"/><circle cx="60" cy="62" r="34" fill="#3D3D3D"/>
+    <polygon points="30,42 34,14 52,32" fill="#3D3D3D"/><polygon points="68,32 86,14 90,42" fill="#3D3D3D"/>
+    <polygon points="36,38 37,22 47,32" fill="#F5A3CF"/><polygon points="73,32 83,22 84,38" fill="#F5A3CF"/>
+    ${eye}<polygon points="57,68 63,68 60,72" fill="#F5A3CF"/>${mouth}
+    <path d="M30 70 h-16M30 76 h-14M90 70 h16M90 76 h14" stroke="#9CA3AF" stroke-width="1.5"/>
+    ${mood==='puzzled'?'<text x="98" y="30" font-family="Lexend,Arial,sans-serif" font-size="26" font-weight="700" fill="#E2A21B">?</text>':''}</svg>`;
+}
+let CT=null;
+function startCat(){
+  if(!S.tables.length){show('home');return}
+  const P=pool().map(p=>[p[0],p[1],weakScore(fkey(p[0],p[1]))+Math.random()*3]).sort((x,y)=>y[2]-x[2]);
+  const seen=new Set(),items=[];
+  for(const [t,n] of P){if(items.length>=5)break;const k=fkey(t,n);if(seen.has(k))continue;seen.add(k);
+    const [a,b]=Math.random()<.5?[t,n]:[n,t];const right=Math.random()<.35;const ans=a*b;
+    items.push({a,b,ans,catSays:right?ans:wrongOptions(a,b)[0]})}
+  CT={items,i:0,earned:0};show('cat');catAsk();
+}
+function catTalk(text,mood){$('catPic').innerHTML=catSVG(mood);$('catSays').innerHTML=text;say(stripTags(text))}
+function catAsk(){
+  if(CT.i>=CT.items.length)return catEnd();
+  renderProg($('catProg'),CT.items.length,CT.i);
+  const it=CT.items[CT.i];
+  catTalk(`I think <b>${it.a} × ${it.b} = ${it.catSays}</b>. Am I right?`,'normal');
+  $('catArea').innerHTML='<div class="two"><button class="big" id="catYes">Yes, right</button><button class="big" id="catNo">No, wrong</button></div>';
+  $('catYes').onclick=()=>catJudge(true);$('catNo').onclick=()=>catJudge(false);
+}
+function catNext(label){$('catArea').insertAdjacentHTML('beforeend',`<button class="big" id="catNext">${label||'Next'}</button>`);$('catNext').onclick=()=>{CT.i++;catAsk()};$('catNext').focus()}
+function catJudge(saysRight){
+  const it=CT.items[CT.i],catRight=it.catSays===it.ans,f=fact(it.a,it.b);
+  if(catRight&&saysRight){CT.earned++;S.stars++;save();applyLook();
+    catTalk(`Hooray, I got it right! ${it.a} × ${it.b} = ${it.ans}. Thank you!`,'happy');$('catArea').innerHTML=`<div class="earned">${STAR}</div>`;catNext();return}
+  if(!catRight&&!saysRight){
+    catTalk(`Oh no! So what is <b>${it.a} × ${it.b}</b>?`,'puzzled');
+    mountPad($('catArea'),v=>{
+      if(v===it.ans)catHow(it);
+      else{f.miss++;save();catTalk(`Hmm, let’s check together. ${it.a} × ${it.b} = ${it.ans}.`,'puzzled');
+        $('catArea').innerHTML=`<div class="feedback try">${dotsHTML(it.a,it.b)}${cueHTML(it.a,it.b)}</div>`;catNext()}
+    });return}
+  f.miss++;save();
+  catTalk(`Let’s check together! ${it.a} × ${it.b} = <b>${it.ans}</b>.`,'puzzled');
+  $('catArea').innerHTML=`<div class="feedback try">${dotsHTML(it.a,it.b)}${cueHTML(it.a,it.b)}<p class="muted">We’ll both remember it next time.</p></div>`;catNext();
+}
+function catHow(it){
+  catTalk(`Yes! ${it.a} × ${it.b} = ${it.ans}. How can I remember it?`,'happy');
+  const opts=[];
+  if(RHYMES[fkey(it.a,it.b)])opts.push(['story','Tell a picture story']);
+  if(friendCue(it.a,it.b))opts.push(['friend','Use a friend fact']);
+  opts.push(['dots','Show me the dots']);
+  $('catArea').innerHTML='<div style="display:flex;flex-direction:column;gap:10px">'+opts.map(o=>`<button class="ghost" data-how="${o[0]}">${o[1]}</button>`).join('')+'</div>';
+  $('catArea').onclick=e=>{const b=e.target.closest('[data-how]');if(!b)return;$('catArea').onclick=null;const how=b.getAttribute('data-how');
+    const body=how==='story'?storyHTML(it.a,it.b):how==='friend'?`<div class="cue">${friendCue(it.a,it.b)}</div>`:dotsHTML(it.a,it.b);
+    CT.earned+=2;S.stars+=2;save();applyLook();
+    catTalk(`Thank you for teaching me! Now I know ${it.a} × ${it.b} = ${it.ans}.`,'happy');
+    $('catArea').innerHTML=`<div class="feedback good">${body}<div class="earned">${STAR+STAR}</div></div>`;catNext()};
+}
+function catEnd(){
+  logRound('cat',CT.items.length,CT.earned);
+  showDone('You taught the cat!',CT.earned,'The cat says thank you. Teaching helps you remember too.',startCat);
+}
+$('catBtn').onclick=startCat;
+
+/* ---------------- buildings ---------------- */
+const SK='#CFE6F5',GR='#86C06A';
+const PROJECTS=[
+ {id:'treehouse',name:'Tree house',
+  parts:[['ladder','Ladder',5],['floor','Floor',10],['walls','Walls',15],['roof','Roof',15],['door','Door',10],['window','Window',10],['flag','Flag',10],['swing','Rope swing',20],['birdbox','Bird box',10],['bunting','Bunting',15],['lantern','Lantern',15],['slide','Slide',25],['telescope','Telescope',25],['cat','Cat',30]],
+  bg:`<rect width="320" height="290" fill="${SK}"/><circle cx="272" cy="40" r="20" fill="#F7D35C"/><rect y="255" width="320" height="35" fill="${GR}"/><circle cx="110" cy="95" r="45" fill="#4E9A52"/><circle cx="215" cy="92" r="45" fill="#4E9A52"/><circle cx="162" cy="62" r="58" fill="#5DAA5F"/><rect x="142" y="110" width="36" height="150" fill="#8B5A2B"/>`,
+  ink:'#2E3440',
+  layers:['swing','birdbox','walls','window','door','roof','bunting','flag','lantern','floor','telescope','ladder','slide','cat'],
+  draw:{
+   swing:'<path d="M142 178 L52 168" stroke="#8B5A2B" stroke-width="9" stroke-linecap="round"/><line x1="64" y1="170" x2="64" y2="228" stroke="#C9A877" stroke-width="2.5"/><line x1="92" y1="173" x2="92" y2="228" stroke="#C9A877" stroke-width="2.5"/><rect x="58" y="226" width="40" height="7" rx="2" fill="#A0692F"/>',
+   birdbox:'<polygon points="152,196 160,186 168,196" fill="#C0392B"/><rect x="153" y="196" width="14" height="15" fill="#E8C27A"/><circle cx="160" cy="203" r="3" fill="#5B3A1A"/>',
+   walls:'<rect x="98" y="96" width="114" height="56" fill="#D9A45B"/><path d="M98 110h114M98 124h114M98 138h114" stroke="#C48F47" stroke-width="1.5"/>',
+   window:'<rect x="112" y="108" width="28" height="24" fill="#BFE3F7" stroke="#7A4A1E" stroke-width="3"/><path d="M126 108v24M112 120h28" stroke="#7A4A1E" stroke-width="2"/>',
+   door:'<rect x="166" y="113" width="26" height="39" rx="3" fill="#7A4A1E"/><circle cx="187" cy="133" r="2.2" fill="#F7D35C"/>',
+   roof:'<polygon points="86,98 224,98 155,52" fill="#C0392B"/>',
+   bunting:'<path d="M92 98 L218 98" stroke="#7A4A1E" stroke-width="1"/><polygon points="96,98 106,98 101,108" fill="#F7D35C"/><polygon points="114,98 124,98 119,108" fill="#4A90D9"/><polygon points="132,98 142,98 137,108" fill="#E85D75"/><polygon points="168,98 178,98 173,108" fill="#4A90D9"/><polygon points="186,98 196,98 191,108" fill="#F7D35C"/><polygon points="204,98 214,98 209,108" fill="#E85D75"/>',
+   flag:'<line x1="155" y1="53" x2="155" y2="22" stroke="#5B3A1A" stroke-width="3"/><polygon points="156,22 180,29 156,36" fill="#F7D35C"/>',
+   lantern:'<line x1="200" y1="100" x2="200" y2="110" stroke="#5B3A1A" stroke-width="1.5"/><circle cx="200" cy="117" r="12" fill="#F7D35C" opacity=".35"/><rect x="195" y="110" width="10" height="13" rx="2" fill="#F2A93B"/>',
+   floor:'<rect x="84" y="152" width="152" height="12" rx="2" fill="#A0692F"/><path d="M98 164 L118 184 M222 164 L202 184" stroke="#8B5A2B" stroke-width="6"/>',
+   telescope:'<g transform="rotate(-25 222 140)"><rect x="210" y="134" width="34" height="9" rx="3" fill="#4A6FA5"/><rect x="242" y="132" width="6" height="13" rx="2" fill="#2E4A75"/></g><line x1="222" y1="142" x2="222" y2="152" stroke="#2E4A75" stroke-width="3"/>',
+   ladder:'<line x1="236" y1="158" x2="248" y2="258" stroke="#8B5A2B" stroke-width="4"/><line x1="256" y1="158" x2="268" y2="258" stroke="#8B5A2B" stroke-width="4"/><path d="M238 175h20M240 192h20M242 209h20M244 226h20M246 243h20" stroke="#8B5A2B" stroke-width="3"/>',
+   slide:'<path d="M86 160 C60 190 50 230 22 254" stroke="#4A90D9" stroke-width="11" fill="none" stroke-linecap="round"/>',
+   cat:'<ellipse cx="292" cy="250" rx="13" ry="9" fill="#3D3D3D"/><circle cx="281" cy="238" r="8" fill="#3D3D3D"/><polygon points="275,233 277,224 282,231" fill="#3D3D3D"/><polygon points="281,231 286,224 288,233" fill="#3D3D3D"/><path d="M305 250 q10 -4 6 -16" stroke="#3D3D3D" stroke-width="3" fill="none"/><circle cx="278" cy="238" r="1.3" fill="#F7D35C"/><circle cx="284" cy="238" r="1.3" fill="#F7D35C"/>'
+  }},
+ {id:'castle',name:'Castle',
+  parts:[['wall','Castle wall',10],['gate','Gate',10],['towerL','Left tower',15],['towerR','Right tower',15],['moat','Moat',10],['bridge','Drawbridge',10],['windows','Windows',10],['roofs','Tower roofs',20],['flags','Flags',10],['banner','Banner',15],['knight','Knight',25],['dragon','Friendly dragon',30]],
+  bg:`<rect width="320" height="290" fill="${SK}"/><ellipse cx="70" cy="40" rx="30" ry="12" fill="#fff"/><ellipse cx="95" cy="34" rx="22" ry="12" fill="#fff"/><rect y="236" width="320" height="54" fill="${GR}"/>`,
+  ink:'#2E3440',
+  layers:['moat','wall','towerL','towerR','windows','roofs','flags','gate','bridge','banner','knight','dragon'],
+  draw:{
+   moat:'<rect x="0" y="246" width="320" height="14" fill="#4A90D9"/>',
+   wall:'<rect x="75" y="140" width="170" height="106" fill="#B9B3A8"/>'+[0,1,2,3,4,5,6,7].map(i=>`<rect x="${75+i*22}" y="128" width="13" height="13" fill="#B9B3A8"/>`).join('')+'<path d="M75 165h170M75 190h170M75 215h170" stroke="#A39C90" stroke-width="1.5"/>',
+   towerL:'<rect x="38" y="100" width="48" height="146" fill="#A9A296"/>'+[0,1,2].map(i=>`<rect x="${38+i*18}" y="88" width="12" height="13" fill="#A9A296"/>`).join(''),
+   towerR:'<rect x="234" y="100" width="48" height="146" fill="#A9A296"/>'+[0,1,2].map(i=>`<rect x="${234+i*18}" y="88" width="12" height="13" fill="#A9A296"/>`).join(''),
+   windows:'<rect x="56" y="130" width="12" height="22" rx="6" fill="#2E3440"/><rect x="252" y="130" width="12" height="22" rx="6" fill="#2E3440"/><rect x="100" y="160" width="14" height="22" rx="7" fill="#2E3440"/><rect x="206" y="160" width="14" height="22" rx="7" fill="#2E3440"/>',
+   roofs:'<polygon points="32,100 92,100 62,52" fill="#6C4BA6"/><polygon points="228,100 288,100 258,52" fill="#6C4BA6"/>',
+   flags:'<path d="M62 53V28M258 53V28" stroke="#5B3A1A" stroke-width="3"/><polygon points="63,28 84,34 63,40" fill="#E04F4F"/><polygon points="259,28 280,34 259,40" fill="#F7D35C"/>',
+   gate:'<path d="M138 246 V208 a22 22 0 0 1 44 0 V246 Z" fill="#5B3A1A"/><path d="M149 196v50M160 192v54M171 196v50M138 222h44" stroke="#3D2A14" stroke-width="2"/>',
+   bridge:'<rect x="134" y="244" width="52" height="16" fill="#A0692F"/><path d="M147 244v16M160 244v16M173 244v16" stroke="#7A4A1E" stroke-width="1.5"/>',
+   banner:'<path d="M196 146 h22 v40 l-11 -8 l-11 8 Z" fill="#E04F4F"/><circle cx="207" cy="162" r="6" fill="#F7D35C"/><path d="M102 146 h22 v40 l-11 -8 l-11 8 Z" fill="#4A90D9"/><circle cx="113" cy="162" r="6" fill="#F7D35C"/>',
+   knight:'<rect x="203" y="222" width="16" height="22" rx="4" fill="#9CA3AF"/><circle cx="211" cy="214" r="9" fill="#C9CDD3"/><rect x="205" y="212" width="12" height="3" fill="#2E3440"/><path d="M211 205 q6 -10 12 -4" stroke="#E04F4F" stroke-width="4" fill="none"/><line x1="222" y1="244" x2="230" y2="204" stroke="#5B3A1A" stroke-width="3"/>',
+   dragon:'<path d="M226 74 q-20 10 -36 -2" stroke="#4E9A52" stroke-width="6" fill="none" stroke-linecap="round"/><ellipse cx="248" cy="72" rx="26" ry="14" fill="#5DAA5F"/><polygon points="240,64 262,30 268,64" fill="#8FD3A2"/><circle cx="276" cy="62" r="11" fill="#5DAA5F"/><circle cx="279" cy="59" r="2.5" fill="#2E3440"/><path d="M285 66 q6 2 8 -2" stroke="#2E3440" stroke-width="2" fill="none"/><polygon points="270,52 274,44 277,52" fill="#F7D35C"/>'
+  }},
+ {id:'rocket',name:'Rocket',
+  parts:[['pad','Launch pad',10],['body','Rocket body',15],['nose','Nose cone',15],['fins','Fins',15],['window','Round window',10],['stripes','Stripes',10],['moon','Moon',15],['flame','Engine flame',20],['planet','Ringed planet',20],['comet','Comet',15],['astronaut','Astronaut',25],['alien','Friendly alien',30]],
+  bg:'<rect width="320" height="290" fill="#1E2747"/>'+[[30,110],[90,20],[140,30],[200,18],[300,130],[20,200],[290,200],[120,80],[230,110]].map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="1.8" fill="#fff"/>`).join('')+'<rect y="255" width="320" height="35" fill="#6B7280"/>',
+  ink:'#FFFFFF',
+  layers:['moon','planet','comet','pad','flame','body','stripes','window','nose','fins','astronaut','alien'],
+  draw:{
+   moon:'<circle cx="55" cy="55" r="24" fill="#F3EBD3"/><circle cx="48" cy="48" r="5" fill="#DDD3B8"/><circle cx="63" cy="62" r="4" fill="#DDD3B8"/>',
+   planet:'<circle cx="265" cy="68" r="20" fill="#C3A6EA"/><ellipse cx="265" cy="68" rx="34" ry="8" fill="none" stroke="#F8C471" stroke-width="3"/>',
+   comet:'<path d="M110 50 L180 70" stroke="#7DB3EE" stroke-width="3" stroke-linecap="round" opacity=".7"/><circle cx="182" cy="71" r="5" fill="#fff"/>',
+   pad:'<rect x="100" y="245" width="120" height="12" rx="2" fill="#9CA3AF"/><path d="M110 245v10M210 245v10" stroke="#4B5563" stroke-width="3"/>',
+   flame:'<polygon points="143,240 177,240 160,276" fill="#F2A93B"/><polygon points="151,240 169,240 160,264" fill="#F7D35C"/>',
+   body:'<rect x="135" y="100" width="50" height="142" rx="10" fill="#E8ECF2"/>',
+   stripes:'<rect x="135" y="178" width="50" height="8" fill="#4A90D9"/><rect x="135" y="192" width="50" height="8" fill="#F7D35C"/>',
+   window:'<circle cx="160" cy="140" r="14" fill="#7DB3EE" stroke="#9CA3AF" stroke-width="4"/><path d="M153 134 l6 -4" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>',
+   nose:'<polygon points="135,104 185,104 160,46" fill="#E04F4F"/>',
+   fins:'<polygon points="135,198 135,242 110,242" fill="#E04F4F"/><polygon points="185,198 185,242 210,242" fill="#E04F4F"/>',
+   astronaut:'<rect x="236" y="226" width="18" height="24" rx="6" fill="#F3F4F6"/><circle cx="245" cy="216" r="11" fill="#F3F4F6"/><rect x="238" y="211" width="14" height="9" rx="4" fill="#4A6FA5"/><path d="M254 232 l8 -8" stroke="#F3F4F6" stroke-width="4" stroke-linecap="round"/>',
+   alien:'<ellipse cx="62" cy="240" rx="16" ry="14" fill="#8FD3A2"/><circle cx="62" cy="236" r="6" fill="#fff"/><circle cx="62" cy="236" r="3" fill="#1D1D1D"/><path d="M56 226 l-4 -12M68 226 l4 -12" stroke="#8FD3A2" stroke-width="2.5"/><circle cx="52" cy="213" r="3" fill="#F7D35C"/><circle cx="72" cy="213" r="3" fill="#F7D35C"/><path d="M78 238 q8 -8 6 -14" stroke="#8FD3A2" stroke-width="4" fill="none" stroke-linecap="round"/>'
+  }}
+];
+const projById=id=>PROJECTS.find(p=>p.id===id)||PROJECTS[0];
+const proj=()=>projById(S.project);
+const builtOf=p=>S.builds[p.id]||(S.builds[p.id]=[]);
+const isDone=p=>builtOf(p).length>=p.parts.length;
+function nextPart(){const p=proj(),b=builtOf(p);const n=p.parts.find(x=>!b.includes(x[0]));return n?{id:n[0],name:n[1],cost:n[2]}:null}
+let justBuilt='';
+function sceneSVG(p){
+  const b=builtOf(p);
+  let s=`<svg viewBox="0 0 320 290" role="img" aria-label="${p.name} picture">${p.bg}`;
+  p.layers.forEach(id=>{if(b.includes(id))s+=`<g class="${id===justBuilt&&p.id===S.project?'new':''}">${p.draw[id]}</g>`});
+  if(!b.length)s+=`<text x="160" y="215" text-anchor="middle" font-family="Lexend,Arial,sans-serif" font-size="14" fill="${p.ink}">Ready to build!</text>`;
+  return s+'</svg>';
+}
+function renderBuild(){
+  const p=proj();
+  $('buildTitle').textContent='My '+p.name.toLowerCase();
+  $('scene').innerHTML=sceneSVG(p);
+  const n=nextPart();let h='';
+  if(!n){
+    const left=PROJECTS.filter(x=>!isDone(x));
+    h=`<div class="next"><strong style="font-size:1.3rem">Your ${p.name.toLowerCase()} is finished!</strong>`+
+      (left.length?'<p>What will you build next?</p>'+left.map(x=>`<button class="big" data-start="${x.id}">Start a ${x.name.toLowerCase()}</button>`).join('')
+        :'<p>You built everything! Amazing work.</p><button class="big" data-start="again">Build them all again</button>')+'</div>';
+  }else{
+    const can=S.stars>=n.cost,pct=Math.min(100,Math.round(S.stars/n.cost*100));
+    h=`<div class="next"><p>Next to build: <b>${n.name}</b> for <b>${n.cost}</b> stars</p><div class="meter" aria-hidden="true"><b style="width:${pct}%"></b></div>`+
+      (can?`<button class="big" id="buyBtn">Build the ${n.name.toLowerCase()}</button>`:`<p class="muted">${n.cost-S.stars} more stars to go. Each right answer is one star.</p>`)+'</div>';
+  }
+  $('buildNext').innerHTML=h;
+  $('buyBtn')&&($('buyBtn').onclick=()=>{
+    const x=nextPart();if(!x||S.stars<x.cost)return;
+    S.stars-=x.cost;builtOf(p).push(x.id);justBuilt=x.id;save();applyLook();renderBuild();justBuilt='';
+    sayAlways(`You built the ${x.name.toLowerCase()}!`);
+  });
+  $('buildNext').querySelectorAll('[data-start]').forEach(b=>b.onclick=()=>{
+    const id=b.getAttribute('data-start');
+    if(id==='again'){PROJECTS.forEach(x=>{S.builds[x.id]=[]});S.project=PROJECTS[0].id}else S.project=id;
+    save();applyLook();renderBuild();
+  });
+  const bl=builtOf(p);
+  $('partList').innerHTML=p.parts.map(x=>`<li class="${bl.includes(x[0])?'got':''}"><span>${x[1]}</span><span>${bl.includes(x[0])?'Built':x[2]+' stars'}</span></li>`).join('');
+  const done=PROJECTS.filter(x=>isDone(x)&&x.id!==p.id);
+  $('galleryPanel').hidden=!done.length;
+  $('gallery').innerHTML=done.map(x=>`<figure>${sceneSVG(x)}<figcaption>${x.name}</figcaption></figure>`).join('');
+}
+$('buildBtnHome').onclick=()=>show('build');
+$('buildBtn2').onclick=()=>show('build');
+$('starBtn').onclick=()=>show('build');
+
+/* ---------------- tricks screen ---------------- */
+let trickT=7,countTimer=null;
+function renderTricks(){
+  let h='';for(let i=1;i<=12;i++)h+=`<button class="chip" style="--tc:${tc(i)}" data-t="${i}" aria-pressed="${i===trickT}">${i}</button>`;
+  $('trickPick').innerHTML=h;
+  const t=trickT;let cnt='';
+  for(let n=1;n<=12;n++)cnt+=`<button data-n="${n}" style="--tc:${tc(t)}"><b>${t*n}</b><small>${n} × ${t}</small></button>`;
+  let list='';const seen=new Set();
+  for(let n=1;n<=12;n++){const k=fkey(t,n);if(RHYMES[k]&&!seen.has(k)){seen.add(k);list+=`<li>${storyHTML(t,n)}</li>`}}
+  $('trickBody').innerHTML=`<h2><span class="swatch" style="--tc:${tc(t)}"></span>The ${t} times table</h2><div class="trick">${TRICKS[t]}</div>
+    <button class="big" id="countBtn">Count along in ${t}s</button><div class="count" id="countGrid">${cnt}</div>
+    <p class="muted">Tap any number to hear it.</p>`+(list?`<h2>Picture stories</h2><ul class="rhymes">${list}</ul>`:'');
+  $('countBtn').onclick=countAlong;
+}
+function stopCount(){if(countTimer){clearTimeout(countTimer);countTimer=null}document.querySelectorAll('#countGrid button').forEach(b=>b.classList.remove('lit'))}
+function countAlong(){
+  stopCount();const btns=document.querySelectorAll('#countGrid button');let i=0;
+  const step=()=>{if(i>0)btns[i-1].classList.remove('lit');if(i>=btns.length){countTimer=null;return}
+    btns[i].classList.add('lit');sayAlways(String(trickT*(i+1)));i++;countTimer=setTimeout(step,1100)};
+  step();
+}
+$('trickPick').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;stopCount();trickT=+b.getAttribute('data-t');renderTricks()});
+$('trickBody').addEventListener('click',e=>{const b=e.target.closest('#countGrid button');if(!b)return;const n=+b.getAttribute('data-n');stopCount();b.classList.add('lit');sayAlways(`${n} times ${trickT} is ${n*trickT}`)});
+$('tricksBtn').onclick=()=>show('tricks');
+
+/* ---------------- grid ---------------- */
+function renderGrid(){
+  let h='<tr><th>×</th>';for(let c=1;c<=12;c++)h+=`<th style="box-shadow:inset 0 -4px 0 ${tc(c)}">${c}</th>`;h+='</tr>';
+  for(let r=1;r<=12;r++){
+    h+=`<tr><th style="box-shadow:inset -4px 0 0 ${tc(r)}">${r}</th>`;
+    for(let c=1;c<=12;c++){const f=S.facts[fkey(r,c)],cls=f&&f.s>=MASTER?'m':(f&&f.seen?'l':'');const on=S.tables.includes(r)||S.tables.includes(c);
+      h+=`<td class="${cls}${on?'':' off'}" title="${r} × ${c} = ${r*c}"></td>`}
+    h+='</tr>';
+  }
+  $('factGrid').innerHTML=h;
+  $('gridSummary').textContent=`You know ${countKnown()} of 78 facts`;
+}
+function countKnown(){return Object.values(S.facts).filter(f=>f.s>=MASTER).length}
+$('gridBtn').onclick=()=>show('grid');
+
+/* ---------------- grown-up summary ---------------- */
+function renderGrown(){
+  const known=countKnown(),learning=Object.values(S.facts).filter(f=>f.seen&&f.s<MASTER).length;
+  const since=new Date();since.setDate(since.getDate()-6);const sinceStr=since.getFullYear()+'-'+pad2(since.getMonth()+1)+'-'+pad2(since.getDate());
+  const week=S.log.filter(l=>l.d>=sinceStr),days=new Set(week.map(l=>l.d)).size;
+  const prac=week.filter(l=>l.m==='practice'),qn=prac.reduce((s,l)=>s+l.n,0),qr=prac.reduce((s,l)=>s+l.r,0);
+  $('grownTables').textContent='Practising: '+(S.tables.length?S.tables.map(t=>t+'×').join(', '):'no tables chosen yet');
+  $('grownStats').innerHTML=[[known+' / 78','facts known'],[learning,'facts being learned'],[days+' of 7','days practised this week'],[qn?Math.round(qr/qn*100)+'%':'–','right answers this week']]
+    .map(s=>`<div class="stat"><b>${s[0]}</b><span>${s[1]}</span></div>`).join('');
+  const f=getFow();
+  if(f){const [a,b]=unkey(f.key);$('grownFow').innerHTML=(storyHTML(a,b)||`<p style="font-size:1.4rem;font-weight:700">${b} × ${a} = ${a*b}</p>`)+(friendCue(a,b)?`<div class="cue">${friendCue(a,b)}</div>`:'')}
+  else $('grownFow').innerHTML='<p class="muted">Choose some times tables first.</p>';
+  const tricky=Object.entries(S.facts).filter(([k,v])=>v.miss>0&&v.s<MASTER).sort((x,y)=>y[1].miss-x[1].miss).slice(0,6);
+  $('grownTricky').innerHTML=tricky.length?tricky.map(([k,v])=>{const [a,b]=unkey(k);const tip=rhymeText(a,b)||stripTags(friendCue(a,b))||TRICKS[b];
+    return `<li><b>${b} × ${a} = ${a*b}</b><span>Missed ${v.miss} time${v.miss>1?'s':''}. Tip: ${tip}</span></li>`}).join('')
+    :'<li>No tricky facts yet. They will show up here after some practice.</li>';
+  const lines=['Times tables summary ('+today()+')','Practising: '+(S.tables.join(', ')||'none'),`Facts known: ${known} of 78`,`Days practised this week: ${days} of 7`];
+  if(qn)lines.push(`Right answers this week: ${qr} of ${qn}`);
+  if(f){const [a,b]=unkey(f.key);lines.push(`Fact of the week: ${b} × ${a} = ${a*b}`)}
+  if(tricky.length)lines.push('Trickiest facts: '+tricky.map(([k])=>{const [a,b]=unkey(k);return `${b} × ${a}`}).join(', '));
+  $('copyText').value=lines.join('\n');
+}
+$('fowChange').onclick=()=>{const cur=S.fow&&S.fow.key;const k=chooseFow(cur);if(k){S.fow={week:weekId(new Date()),key:k};save();renderGrown()}};
+$('copyBtn').onclick=()=>{const t=$('copyText');const done=()=>{$('copyBtn').textContent='Copied'};
+  try{navigator.clipboard.writeText(t.value).then(done,()=>{t.select();$('copyBtn').textContent='Text selected: copy it now'})}catch(e){t.select();$('copyBtn').textContent='Text selected: copy it now'}};
+$('grownBtn').onclick=()=>show('grown');
+
+applyLook();show('home');
+})();
+</script>
+
+</body>
+</html>
