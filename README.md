@@ -16,7 +16,8 @@ Open `index.html` in a browser, or turn on GitHub Pages for this repo to play it
 - A fact only counts as known after it is typed correctly on 3 different days; known facts come back for review
 - After a mistake: the answer plus one way to remember it (picture story, step-by-step hint or dots), with *Show another way*
 - Pairs game, Teach the Cat (spot the cat's mistakes) and a fact of the week
-- Stars build a tree house, then a castle, then a rocket
+- Stars build a tree house, then a castle, then a rocket; finished places are kept and can be visited any time
+- Pet shop: up to 6 pets per place (kitten, puppy, bunny, hamster, parrot, tortoise, goldfish, hedgehog), each with a bed, food bowl, ball and bow to buy
 - 12 × 12 progress grid, a list of facts to look at again after each round
 - Grown-up area (press and hold to open): summary to copy for school, fact of the week, manage children
 
