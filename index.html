@@ -614,6 +614,16 @@ const TRICKS={
   11:'Up to 9, times 11 is the digit twice: 11 × 4 = 44. For 11 × 12, do 10 × 12 and add one more 12.',
   12:'Times 12 is times 10 plus times 2. 12 × 3 is 30 + 6.'
 };
+const MORE_TRICKS={
+  12:[
+    {h:'Copy the 2 times table',t:'The last digits go 2, 4, 6, 8, 0, just like the 2s: 12, 24, 36, 48, 60, 72, 84, 96, 108, 120, 132, 144.'},
+    {h:'Double the 6s',t:'Know the 6 times table? Double it. 6 × 7 = 42, so 12 × 7 = 84.'},
+    {h:'10 lots and 2 lots',t:'12 × 8 is 10 × 8 = 80, plus 2 × 8 = 16. 80 + 16 = 96.'},
+    {h:'The clock',t:'A clock has 12 numbers with 5 minutes between each. 12 × 5 = 60 minutes in an hour. The hour hand goes round twice a day: 12 × 2 = 24 hours.'},
+    {h:'Count 12s on your hand',t:'Each finger has 3 parts. 4 fingers × 3 parts = 12. Tap each part with your thumb to count to 12. Two hands make 24!'},
+    {h:'12s all around you',t:'A dozen eggs, 12 months in a year, 12 numbers on a clock.'}
+  ]
+};
 const RHYMES={
   '3x4':{t:'1, 2, 3, 4! 12 = 3 × 4. The digits count in order.',p:'steps'},
   '7x8':{t:'5, 6, 7, 8! 56 = 7 × 8. The digits count in order.',p:'steps'},
@@ -630,6 +640,8 @@ const RHYMES={
   '8x9':{t:'Fold finger 8: 7 fingers, then 2 fingers. 72.',p:'hand'},
   '9x9':{t:'81 is 18 turned around. 9 × 2 = 18 and 9 × 9 = 81 are mirror twins.',p:'mirror'},
   '5x5':{t:'25 minutes: the big hand on the 5.',p:'clock'},
+  '5x12':{t:'A clock has 12 numbers with 5 minutes between each. 12 × 5 = 60 minutes in an hour!',p:'clock'},
+  '2x12':{t:'The clock goes round twice every day: 2 × 12 = 24 hours.',p:'day'},
   '12x12':{t:'One monster with four eyes and four noses: 1-4-4! 12 × 12 = 144.',p:'monster'},
   '11x11':{t:'11 × 11 = 121. It reads the same both ways.',p:'mirror'}
 };
@@ -1317,7 +1329,7 @@ function renderTricks(){
   for(let n=1;n<=12;n++)cnt+=`<button data-n="${n}" style="--tc:${tc(t)}"><b>${t*n}</b><small>${n} × ${t}</small></button>`;
   let list='';const seen=new Set();
   for(let n=1;n<=12;n++){const k=fkey(t,n);if(RHYMES[k]&&!seen.has(k)){seen.add(k);list+=`<li><button data-story="${k}" aria-label="Hear the story">${storyHTML(t,n)}</button></li>`}}
-  $('trickBody').innerHTML=`<h2><span class="swatch" style="--tc:${tc(t)}"></span>The ${t} times table</h2><div class="trick">${TRICKS[t]}</div>
+  $('trickBody').innerHTML=`<h2><span class="swatch" style="--tc:${tc(t)}"></span>The ${t} times table</h2><div class="trick">${TRICKS[t]}</div>${(MORE_TRICKS[t]||[]).map(x=>`<div class="trick"><b>${x.h}</b><br>${x.t}</div>`).join('')}
     <button class="big" id="countBtn">Count along in ${t}s</button><div class="count" id="countGrid">${cnt}</div>
     <p class="muted">Tap any number to hear it.</p>`+(list?`<h2>Picture stories</h2><ul class="rhymes">${list}</ul>`:'');
   $('countBtn').onclick=countAlong;
