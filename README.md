@@ -11,12 +11,14 @@ Open `index.html` in a browser, or turn on GitHub Pages for this repo to play it
 - 12 animal buddies (fox, cat, dog, owl, panda, rabbit, bear, frog, lion, penguin, unicorn, dinosaur) who cheer the child on, plus confetti for big moments
 - Choose which tables to practise; each table has its own colour
 - Calm, dyslexia-friendly design: tinted page colours, Lexend, Atkinson or OpenDyslexic letters, one question at a time, read-aloud and gentle sounds
+- Practice screen fits a phone without scrolling; keypad registers on touch so fast taps are never lost
 - No timer by default; optional 12-second or 6-second (Year 4 Multiplication Tables Check) mode, starting after the question is read out
 - New facts start as multiple choice, then move to typing on a big number pad
 - A fact only counts as known after it is typed correctly on 3 different days; known facts come back for review
 - After a mistake: the answer plus one way to remember it (picture story, step-by-step hint or dots), with *Show another way*
 - Pairs game, Teach the Cat (spot the cat's mistakes) and a fact of the week
 - Stars build a tree house, then a castle, then a rocket; finished places are kept and can be visited any time
+- Go inside each place once its walls and door are built: buy furniture (2–8 stars), drag it anywhere, flip it or put it back for a refund, and choose free wallpaper and floors. Pets and the child's buddy live inside too
 - Pet shop: up to 6 pets per place (kitten, puppy, bunny, hamster, parrot, tortoise, goldfish, hedgehog), each with a bed, food bowl, ball and bow to buy
 - 12 × 12 progress grid, a list of facts to look at again after each round
 - Grown-up area (press and hold to open): summary to copy for school, fact of the week, manage children
