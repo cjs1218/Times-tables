@@ -1,6 +1,6 @@
 // Offline support for Times Table Stars.
 // Bump VERSION whenever index.html changes so devices pick up the new copy.
-const VERSION = 'tts-v16';
+const VERSION = 'tts-v17';
 const CORE = [
   './',
   'index.html',

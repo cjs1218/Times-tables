@@ -281,6 +281,28 @@ body.playing .wrap{gap:12px;padding-block:8px 16px}
 .swatches button svg{width:100%;height:auto;border-radius:6px;display:block}
 .swatches button[aria-pressed="true"]{border-color:var(--accent)}
 .enter{background:var(--good);color:#fff}
+
+/* never let anything push the page wider than the phone, even with wide letters */
+html,body{overflow-x:hidden}
+.panel,.panel>*,.wrap>*{min-width:0}
+.tables{grid-template-columns:repeat(4,minmax(0,1fr))}
+.two,.menu,.choices,.stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+.pad{grid-template-columns:repeat(3,minmax(0,1fr))}
+.cards,.count{grid-template-columns:repeat(4,minmax(0,1fr))}
+.animals{grid-template-columns:repeat(auto-fill,minmax(58px,1fr))}
+.animals button span{overflow-wrap:anywhere;text-align:center}
+.parts{grid-template-columns:repeat(auto-fill,minmax(min(100%,150px),1fr))}
+.parts li{flex-wrap:wrap;min-width:0}
+.parts li span{overflow-wrap:anywhere}
+.petshop{grid-template-columns:repeat(auto-fill,minmax(76px,1fr))}
+.petshop button{min-width:0}
+.petshop button span{overflow-wrap:anywhere;text-align:center}
+.swatches{grid-template-columns:repeat(auto-fill,minmax(70px,1fr))}
+.swatches button{min-width:0;overflow-wrap:anywhere}
+.mypets .pinfo b,.selbar b{overflow-wrap:anywhere}
+.menu button,.kid b,.whobtn{overflow-wrap:anywhere}
+:root[data-font="opendyslexic"] body{font-size:17px;letter-spacing:0;word-spacing:0}
+:root[data-font="opendyslexic"] .petshop button,:root[data-font="opendyslexic"] .swatches button,:root[data-font="opendyslexic"] .animals button{font-size:.65rem}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="star" viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></symbol></svg>
