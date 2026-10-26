@@ -19,6 +19,9 @@ Open `index.html` in a browser, or turn on GitHub Pages for this repo to play it
 - Pairs game, Teach the Cat (spot the cat's mistakes) and a fact of the week
 - Stars build a tree house, then a castle, then a rocket; finished places are kept and can be visited any time
 - Go inside each place once its walls and door are built: buy furniture (2–8 stars), drag it anywhere, flip it or put it back for a refund, and choose free wallpaper and floors. Pets and the child's buddy live inside too
+- Tree house garden: trampoline, hot tub, zip wire, swings, tent, campfire, duck pond and more
+- Rocket trips: buy fuel to fly to the Moon and Candy Planet, each a new place to decorate, collecting passport stamps
+- Dress up the buddy with hats, glasses and neck items, worn everywhere in the app
 - Pet shop: up to 6 pets per place (kitten, puppy, bunny, hamster, parrot, tortoise, goldfish, hedgehog), each with a bed, food bowl, ball and bow to buy
 - 12 × 12 progress grid, a list of facts to look at again after each round
 - Grown-up area (press and hold to open): summary to copy for school, fact of the week, manage children
