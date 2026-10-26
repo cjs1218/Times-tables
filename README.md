@@ -20,7 +20,7 @@ Open `index.html` in a browser, or turn on GitHub Pages for this repo to play it
 - Stars build a tree house, then a castle, then a rocket; finished places are kept and can be visited any time
 - Go inside each place once its walls and door are built: buy furniture (2–8 stars), drag it anywhere, flip it or put it back for a refund, and choose free wallpaper and floors. Pets and the child's buddy live inside too
 - Tree house garden: trampoline, hot tub, zip wire, swings, tent, campfire, duck pond and more
-- Rocket trips: buy fuel to fly to the Moon and Candy Planet, each a new place to decorate, collecting passport stamps
+- Rocket trips: buy fuel to fly to the Moon, Candy Planet, Ice Planet, Jungle Planet and Robot Planet, each a new place to decorate, collecting passport stamps
 - Castle grounds: moat monster, jousting horse, fireworks, catapult and a dragon egg that hatches after 3 practice rounds
 - Name your pets and teach them tricks (jump, spin, dance) they do when tapped
 - Dream items to save up for: helter-skelter (50 stars), rollercoaster (60) and space station (80)
