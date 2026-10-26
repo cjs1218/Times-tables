@@ -21,6 +21,9 @@ Open `index.html` in a browser, or turn on GitHub Pages for this repo to play it
 - Go inside each place once its walls and door are built: buy furniture (2–8 stars), drag it anywhere, flip it or put it back for a refund, and choose free wallpaper and floors. Pets and the child's buddy live inside too
 - Tree house garden: trampoline, hot tub, zip wire, swings, tent, campfire, duck pond and more
 - Rocket trips: buy fuel to fly to the Moon and Candy Planet, each a new place to decorate, collecting passport stamps
+- Castle grounds: moat monster, jousting horse, fireworks, catapult and a dragon egg that hatches after 3 practice rounds
+- Name your pets and teach them tricks (jump, spin, dance) they do when tapped
+- Dream items to save up for: helter-skelter (50 stars), rollercoaster (60) and space station (80)
 - Dress up the buddy with hats, glasses and neck items, worn everywhere in the app
 - Pet shop: up to 6 pets per place (kitten, puppy, bunny, hamster, parrot, tortoise, goldfish, hedgehog), each with a bed, food bowl, ball and bow to buy
 - 12 × 12 progress grid, a list of facts to look at again after each round
