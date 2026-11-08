@@ -762,7 +762,16 @@ const RHYMES={
   '12x12':{t:'One monster with four eyes and four noses: 1-4-4! 12 × 12 = 144.',p:'monster'},
   '11x11':{t:'11 × 11 = 121. It reads the same both ways.',p:'mirror'}
 };
-const rhymeText=(a,b)=>(RHYMES[fkey(a,b)]||{}).t||'';
+// extra rhymes from home, shown as another way to remember
+const RHYME_EXTRA={
+  '3x3':'3 times 3? Think of a rhyme, and you\u2019ll remember the answer\u2019s 9!',
+  '4x4':'If you\u2019re ever asked by the Queen, \u201cWhat\u2019s 4 times 4?\u201d, please tell her 16!',
+  '5x5':'5 times 5 is 25. How good it is to be alive! High five!',
+  '6x6':'Abracadabra, magic trick: 6 times 6 is 36!',
+  '7x7':'7 kids in 7 lines, count them all and it\u2019s 49!',
+  '8x8':'8 times 8 is 64, push your 8-year-old sister out the door!'
+};
+const rhymeText=(a,b)=>(RHYMES[fkey(a,b)]||{}).t||RHYME_EXTRA[fkey(a,b)]||'';
 const stripTags=s=>s.replace(/<[^>]+>/g,'');
 
 // Step-by-step hint built from a fact the child already knows.
@@ -867,14 +876,16 @@ function storyHTML(a,b){const r=RHYMES[fkey(a,b)];if(!r)return '';return `<figur
 function dotsHTML(a,b){const small=a*b>60;let h=`<div class="dots${small?' small':''}" style="grid-template-columns:repeat(${b},auto)">`;for(let i=0;i<a*b;i++)h+='<i></i>';return h+'</div>'}
 
 // One way of remembering at a time, with "Show another way".
-function supportKinds(a,b){const k=[];if(RHYMES[fkey(a,b)])k.push('story');if(friendSteps(a,b))k.push('steps');k.push('dots');return k}
+function supportKinds(a,b){const k=[];if(RHYMES[fkey(a,b)])k.push('story');if(RHYME_EXTRA[fkey(a,b)])k.push('rhyme');if(friendSteps(a,b))k.push('steps');k.push('dots');return k}
 function supportBody(a,b,kind){
   if(kind==='story')return storyHTML(a,b);
+  if(kind==='rhyme')return `<div class="cue" style="font-size:1.1rem;font-weight:700;text-align:center">${RHYME_EXTRA[fkey(a,b)]}</div>`;
   if(kind==='steps')return stepsHTML(a,b,false);
   return `<p style="font-weight:500">${a} rows of ${b}</p>${dotsHTML(a,b)}`;
 }
 function supportSpeech(a,b,kind){
-  if(kind==='story')return rhymeText(a,b);
+  if(kind==='story')return (RHYMES[fkey(a,b)]||{}).t||'';
+  if(kind==='rhyme')return RHYME_EXTRA[fkey(a,b)];
   if(kind==='steps')return stepsSpeech(a,b);
   return `${a} rows of ${b} makes ${a*b}`;
 }
@@ -1266,7 +1277,7 @@ function catJudge(saysRight){
 }
 function catHow(it){
   catTalk(`Yes! ${it.a} × ${it.b} = ${it.ans}. How can I remember it?`,'happy');ding();
-  const labels={story:'Tell a picture story',steps:'Show me the steps',dots:'Show me the dots'};
+  const labels={story:'Tell a picture story',rhyme:'Say a rhyme',steps:'Show me the steps',dots:'Show me the dots'};
   $('catArea').innerHTML='<div style="display:flex;flex-direction:column;gap:10px">'+supportKinds(it.a,it.b).map(k=>`<button class="ghost" data-how="${k}">${labels[k]}</button>`).join('')+'</div>';
   $('catArea').onclick=e=>{const b=e.target.closest('[data-how]');if(!b)return;$('catArea').onclick=null;const how=b.getAttribute('data-how');
     CT.earned+=2;S.stars+=2;save();applyLook();
@@ -1847,7 +1858,8 @@ function renderTricks(){
   for(let n=1;n<=12;n++){const k=fkey(t,n);if(RHYMES[k]&&!seen.has(k)){seen.add(k);list+=`<li><button data-story="${k}" aria-label="Hear the story">${storyHTML(t,n)}</button></li>`}}
   $('trickBody').innerHTML=`<h2><span class="swatch" style="--tc:${tc(t)}"></span>The ${t} times table</h2><div class="trick">${TRICKS[t]}</div>${(MORE_TRICKS[t]||[]).map(x=>`<div class="trick"><b>${x.h}</b><br>${x.t}</div>`).join('')}
     <button class="big" id="countBtn">Count along in ${t}s</button><div class="count" id="countGrid">${cnt}</div>
-    <p class="muted">Tap any number to hear it.</p>`+(list?`<h2>Picture stories</h2><ul class="rhymes">${list}</ul>`:'');
+    <p class="muted">Tap any number to hear it.</p>`+(list?`<h2>Picture stories</h2><ul class="rhymes">${list}</ul>`:'')+
+    (RHYME_EXTRA[fkey(t,t)]?`<h2>Rhyme</h2><button class="cue" data-rhyme="${fkey(t,t)}" style="font:inherit;font-weight:700;color:inherit;text-align:left;border:2px solid var(--star);background:var(--paper)">${RHYME_EXTRA[fkey(t,t)]}</button>`:'');
   $('countBtn').onclick=countAlong;
 }
 function stopCount(){if(countTimer){clearTimeout(countTimer);countTimer=null}document.querySelectorAll('#countGrid button').forEach(b=>b.classList.remove('lit'))}
@@ -1859,7 +1871,9 @@ function countAlong(){
 }
 $('trickPick').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;stopCount();trickT=+b.getAttribute('data-t');renderTricks()});
 $('trickBody').addEventListener('click',e=>{
-  const s=e.target.closest('[data-story]');if(s){const [a,b]=unkey(s.getAttribute('data-story'));sayAlways(rhymeText(a,b));return}
+  const rh=e.target.closest('[data-rhyme]');if(rh){sayAlways(RHYME_EXTRA[rh.dataset.rhyme]);return}
+  const s=e.target.closest('[data-story]');if(s){const [a,b]=unkey(s.getAttribute('data-story'));sayAlways((RHYMES[s.getAttribute('data-story')]||{}).t||'');return}
+  if(0){const [a,b]=unkey(s.getAttribute('data-story'));sayAlways(rhymeText(a,b));return}
   const b=e.target.closest('#countGrid button');if(!b)return;const n=+b.getAttribute('data-n');stopCount();b.classList.add('lit');sayAlways(`${n} times ${trickT} is ${n*trickT}`);
 });
 $('tricksBtn').onclick=()=>show('tricks');
